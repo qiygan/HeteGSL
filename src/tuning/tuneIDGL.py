@@ -1,18 +1,20 @@
 server = 'S4'
 server = 'S5'
 server = 'Xy'
-from utils.util_funcs import shell_init, tqdm_fixed
+from utils.util_funcs import shell_init, tqdm_fixed, time2str
 
 
 class IDGL_Config:
-    dataset = 'cora'
     model = 'IDGL'
+    # model configs
     lr = 0.01
     weight_decay = 5e-4
     num_head = 4
     lamda = 0.8
     epochs = 300
-
+    seed = 2020
+    # other settings
+    out_path = '/results/IDGL/'
     def __init__(self, dataset='cora'):
         self.dataset = dataset
 
@@ -50,15 +52,10 @@ def grid_tune_single_var(to_be_tuned, para_ind, run_times, resd):
             np.random.seed(i)
             seed = i
             # * ================ Default configs ================
-            # paths
-            exp_name = 'NENS<{}>{}_{:.3f}-[{}]-{}'.format(
-                mode_name, dataset, optm_conf['alpha'], settings, time.strftime('%m-%d %H:%M:%S', time.localtime()))
-            temp_exp_path = '../tmp/{}'.format(exp_name)
-            paths = {'log_path': log_path, 'out_path': temp_exp_path}
             # Model config
             args = IDGL_Config(dataset)
             # * ================= Modify config =================
-            exec ("%s = tuning_set[para_i]" % 'args.' + to_be_tuned)
+            exec("%s = tuning_set[para_i]" % 'args.' + to_be_tuned)
             # * ================ Start Running ===================
             print('\nRun{} {}'.format(i, exp_name), end='')
             print(' <seed={}>'.format(seed), end='')
@@ -70,9 +67,6 @@ def grid_tune_single_var(to_be_tuned, para_ind, run_times, resd):
             with open(fname, 'rb') as handle:
                 data_loaded = pickle.load(handle)
                 res_dict, epoch_res = data_loaded['res_dict'], data_loaded['epoch_dict']
-            res_list.append(res_dict)
-            epoch_df = pd.DataFrame.from_records(epoch_res)
-            epoch_list.append(epoch_df)
             # * =================================================
         draw_input = {'mode_name': mode_name, 'run_times': run_times,
                       'start_time': start_time, 'dataset': dataset,
@@ -93,13 +87,6 @@ dataset = 'acm'
 log_path = '../results/IDGL'
 
 # * ============== Initialization ===================
-mode_name = '<IMDB44>Alpha={}'.format(hp.alpha)
-# mode_name = 'IMDB_largeEpoch,Alpha={}_cla_layer={}_[neg_edge,ns={},{}]'.format(alpha, cla_layers, e_neg_rate, ns_neg_rate)
-print(
-    '\ndataset={}\tconv_method={}\tcla_method,layers={}_{}\tneg_edge,ns={},{}\nrun_config={}\trun_times = {}\ttrain_times={} \n'
-        .format(dataset, hp.conv_method, hp.cla_method, hp.cla_layers, hp.e_neg_rate, hp.ns_neg_rate, run_config,
-                run_times,
-                train_times))
 resd = Results_dealer(dataset, '../results/')
 
 # * ============== HyperParaTuning ===================
