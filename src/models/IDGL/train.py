@@ -7,6 +7,8 @@ Paper: https://arxiv.org/abs/1710.10903
 Author's code: https://github.com/PetarV-/GAT
 Pytorch implementation: https://github.com/Diego999/pyGAT
 """
+import sys
+sys.path.append('../')
 from utils.util_funcs import shell_init,seed_init
 
 #

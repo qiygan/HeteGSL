@@ -7,15 +7,19 @@ def shell_init(server='S5', gpu_id=0, f_prefix=''):
     '''
     import os
     import warnings
+    import sys
 
     warnings.filterwarnings("ignore")
     if server == 'Xy':
         SOURCE_PATH = '/home/chopin/zja/PyProject/HeteGSL/' + f_prefix
-        # SOURCE_PATH = '/home/zja/PyProject/HeteRLWalk/src_jhy/'
+        python_command = '/home/chopin/zja/anaconda/bin/python'
     else:
         SOURCE_PATH = '/home/zja/PyProject/HeteGSL/' + f_prefix
+        python_command = 'python'
+        os.environ['CUDA_VISIBLE_DEVICES'] = str(gpu_id)
     os.chdir(SOURCE_PATH)
-    os.environ['CUDA_VISIBLE_DEVICES'] = str(gpu_id)
+    sys.path.append(SOURCE_PATH + 'src/')
+    return python_command
 
 
 def seed_init(seed):
@@ -71,3 +75,25 @@ def time2str(t):
         return '{:.2f}min'.format(t / 60)
     else:
         return '{:.2f}s'.format(t)
+
+
+def gen_run_commands(python_command='python', prog_path='', conf=None, return_str=True):
+    var_list = conf.__dict__.keys()
+    if return_str:
+        res = python_command + ' ' + prog_path + ' '
+        for var in var_list:
+            if var[0] != '_':
+                val = conf.__dict__[var]
+                val_s = "'{}'".format(val) if isinstance(val, str) else str(val)
+                res += '--' + var + '=' + val_s + ' '
+        return res
+    else:
+        command_list = [python_command, prog_path]
+        for var in var_list:
+            if var[0] != '_':
+                val = conf.__dict__[var]
+                # val_s = "'{}'".format(val) if isinstance(val, str) else str(val)
+                # command_list += '--' + var + '=' + val_s + ' '
+                command_list.append('--' + var)
+                command_list.append(str(val))
+    return command_list

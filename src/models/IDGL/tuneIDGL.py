@@ -1,28 +1,38 @@
-server = 'S4'
-server = 'S5'
 server = 'Xy'
-from utils.util_funcs import shell_init, tqdm_fixed, time2str
+server = 'S5'
+import os
+import sys
+
+sys.path.append('../')
+sys.path.append(os.getcwd())
+
+from utils.util_funcs import *
+
+python_command = shell_init(server=server, gpu_id=3)
+from utils import Results_dealer
+
+print(os.getcwd())
+from models.IDGL import train_idgl
+
+import time
+import pickle
+import subprocess
 
 
 class IDGL_Config:
     model = 'IDGL'
     # model configs
-    lr = 0.01
-    weight_decay = 5e-4
     num_head = 4
-    lamda = 0.8
     epochs = 300
     seed = 2020
+    weight_decay = 5e-4
+    lamda = 0.8
+    lr = 0.01
     # other settings
     out_path = '/results/IDGL/'
+
     def __init__(self, dataset='cora'):
         self.dataset = dataset
-
-
-shell_init(server='S5', gpu_id=3)
-import numpy as np
-import time
-from models.IDGL import train_idgl
 
 
 def grid_search():
@@ -30,15 +40,14 @@ def grid_search():
 
 
 def grid_tune_single_var(to_be_tuned, para_ind, run_times, resd):
-    def _generate_size_list(para_ind='all'):
+    def _generate_lr_list(para_ind='all'):
         para_set = {}
-        para_set['all'] = 1
-        para_set[2] = 2
+        para_set['all'] = [0.09, 2, 3]
         return para_set[para_ind]
 
     # to be tuned parameters
-    if to_be_tuned == 'size':
-        tuning_set = _generate_size_list()
+    if to_be_tuned == 'lr':
+        tuning_set = _generate_lr_list()
 
     start_time = time.strftime('%m-%d %H:%M%S', time.localtime())
     # Start tuning
@@ -49,39 +58,34 @@ def grid_tune_single_var(to_be_tuned, para_ind, run_times, resd):
         settings = '{}={}'.format(to_be_tuned, para_string)
         print('\nRuning :'.format(settings))
         for i in range(run_times):
-            np.random.seed(i)
             seed = i
             # * ================ Default configs ================
             # Model config
             args = IDGL_Config(dataset)
             # * ================= Modify config =================
-            exec("%s = tuning_set[para_i]" % 'args.' + to_be_tuned)
+            exec("args.{} = tuning_set[para_i]".format(to_be_tuned))
             # * ================ Start Running ===================
-            print('\nRun{} {}'.format(i, exp_name), end='')
             print(' <seed={}>'.format(seed), end='')
-            command_line = [python_command, 'trainNENS.py', '--config', con_fname]
+            command_line = gen_run_commands(python_command, 'train.py', IDGL_Config)
+            print(command_line)
             result = subprocess.run(command_line, stdout=subprocess.PIPE)
             # print(result.stdout)
             # * ================ Result Processing ===============
-            fname = '{}.dat'.format(paths['out_path'])
-            with open(fname, 'rb') as handle:
-                data_loaded = pickle.load(handle)
-                res_dict, epoch_res = data_loaded['res_dict'], data_loaded['epoch_dict']
+            # fname = '{}.dat'.format(paths['out_path'])
+            # with open(fname, 'rb') as handle:
+            #     data_loaded = pickle.load(handle)
+            #     res_dict, epoch_res = data_loaded['res_dict'], data_loaded['epoch_dict']
             # * =================================================
-        draw_input = {'mode_name': mode_name, 'run_times': run_times,
-                      'start_time': start_time, 'dataset': dataset,
-                      'exp_name': exp_name, 'settings': settings,
-                      'config_dict': config_dict}
         # resd.calc_and_write_mean_results(mode_name, res_list)
-        pic_path = resd.process_epoch_data(epoch_list, draw_input)
     return pic_path
 
 
 # * ============ HyperParaTuning Variables ==========
-to_be_tuned = 'alpha'
+to_be_tuned = 'lr'
 para_ind = 'none'
 dataset = 'dblp'
 dataset = 'acm'
+run_times = 10
 # * ================ Model Variables ================
 # File paths
 log_path = '../results/IDGL'
@@ -91,7 +95,7 @@ resd = Results_dealer(dataset, '../results/')
 
 # * ============== HyperParaTuning ===================
 start_time = time.time()
-pic_path = grid_tune_single_var(to_be_tuned, para_ind, resd)
+pic_path = grid_tune_single_var(to_be_tuned, para_ind, run_times, resd)
 tuning_time = time.time() - start_time
 print('Hyper-paramter tuning finished!! tuning time ={}\nPic_path = {} ,'
       .format(time2str(tuning_time), pic_path))
