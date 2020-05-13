@@ -8,12 +8,12 @@ Author's code: https://github.com/PetarV-/GAT
 Pytorch implementation: https://github.com/Diego999/pyGAT
 """
 import sys
-sys.path.append('../')
+# sys.path.append('../')
 from utils.util_funcs import shell_init,seed_init
 
 #
 # shell_init(server='S5', gpu_id=3)
-shell_init(server='S5', gpu_id=5)
+# shell_init(server='S5', gpu_id=5)
 # shell_init(server='S5', gpu_id=4, f_prefix='src/models/IDGL')
 import argparse
 import networkx as nx
@@ -35,15 +35,10 @@ def accuracy(logits, labels):
     return correct.item() * 1.0 / len(labels)
 
 
-def evaluate(model, features, labels, mask, model_name='GAT_dgl', adj=None, h=None):
+def evaluate(model, features, labels, mask, adj=None, h=None):
     model.eval()
     with torch.no_grad():
-        if model_name == 'GAT_dgl':
-            logits = model(features)
-        elif model_name == 'GCN':
-            logits = model(features, adj)
-        elif model_name == 'IDGL':
-            logits, _, _ = model(features, adj, h)
+        logits, _, _ = model(features, adj, h)
         logits = logits[mask]
         labels = labels[mask]
         return accuracy(logits, labels)
@@ -97,8 +92,7 @@ def train_idgl(args):
     g.add_edges(g.nodes(), g.nodes())
     n_edges = g.number_of_edges()
     # create model
-    heads = ([args.num_heads] * args.num_layers) + [args.num_out_heads]
-    model = IDGL(num_feats, args.num_hidden, n_classes, args.num_head, args.lamda)
+    model = IDGL(num_feats, args.num_hidden, n_classes, args.num_head, args.ori_ratio)
 
     print(model)
     if cuda:
@@ -118,12 +112,7 @@ def train_idgl(args):
         if epoch >= 3:
             t0 = time.time()
         # forward
-        if args.model == 'GAT_dgl':
-            logits = model(features)
-        elif args.model == 'GCN':
-            logits = model(features, adj)
-        elif args.model == 'IDGL':
-            logits, h, adj_new = model(features, adj, h)
+        logits, h, adj_new = model(features, adj, h)
         loss = loss_fcn(logits[train_mask], labels[train_mask])
 
         optimizer.zero_grad()
@@ -135,10 +124,7 @@ def train_idgl(args):
 
         train_acc = accuracy(logits[train_mask], labels[train_mask])
 
-        if args.fastmode:
-            val_acc = accuracy(logits[val_mask], labels[val_mask])
-        else:
-            val_acc = evaluate(model, features, labels, val_mask, args.model, adj, h)
+        val_acc = evaluate(model, features, labels, val_mask, adj, h)
 
         print("Epoch {:05d} | Time(s) {:.4f} | r {:.4f} | TrainAcc {:.4f} |"
               " ValAcc {:.4f} | ETputs(KTEPS) {:.2f}".
@@ -146,7 +132,7 @@ def train_idgl(args):
                      val_acc, n_edges / np.mean(dur) / 1000))
 
     print()
-    acc = evaluate(model, features, labels, test_mask, args.model, adj)
+    acc = evaluate(model, features, labels, test_mask, adj)
     print("Test Accuracy {:.4f}".format(acc))
     res_dict = {'parameters': args, 'res': acc}
     return res_dict
@@ -154,43 +140,26 @@ def train_idgl(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='GAT_dgl')
-    register_data_args(parser)
     parser.add_argument("--gpu", type=int, default=0,
                         help="which GPU to use. Set -1 to use CPU.")
-    parser.add_argument("--epochs", type=int, default=200,
-                        help="number of training epochs")
-    parser.add_argument("--num-heads", type=int, default=8,
-                        help="number of hidden attention heads")
-    parser.add_argument("--num-out-heads", type=int, default=1,
-                        help="number of output attention heads")
-    parser.add_argument("--num-layers", type=int, default=1,
-                        help="number of hidden layers")
+    parser.add_argument("--dataset", type=str, default='cora',
+                        help="dataset to use")
+    parser.add_argument("--num_head", type=int, default=8,
+                        help="number of metric heads")
     parser.add_argument("--num-hidden", type=int, default=8,
                         help="number of hidden units")
-    parser.add_argument("--residual", action="store_true", default=False,
-                        help="use residual connection")
-    parser.add_argument("--in-drop", type=float, default=.6,
-                        help="input feature dropout")
-    parser.add_argument("--attn-drop", type=float, default=.6,
-                        help="attention dropout")
+    parser.add_argument("--epochs", type=int, default=300,
+                        help="number of training epochs")
+    parser.add_argument("--seed", type=int, default=0,
+                        help="training seed")
+    parser.add_argument('--weight_decay', type=float, default=5e-4,
+                        help="weight decay")
+    parser.add_argument("--ori_ratio", type=float, default=0.8,
+                        help="ratio of retain the original graph")
     parser.add_argument("--lr", type=float, default=0.005,
                         help="learning rate")
-    parser.add_argument('--weight-decay', type=float, default=5e-4,
-                        help="weight decay")
-    parser.add_argument('--negative-slope', type=float, default=0.2,
-                        help="the negative slope of leaky relu")
-
-    parser.add_argument('--fastmode', action="store_true", default=False,
-                        help="skip re-evaluate the validation set")
+    parser.add_argument('--out_path', type=str, default='/results/IDGL/',
+                        help="path of results")
     args = parser.parse_args()
-    args.dataset = 'cora'
-    dataset = 'cora'
-    args.model = 'IDGL'
-    args.lr = 0.01
-    args.weight_decay = 5e-4
-    args.num_head = 4
-    args.lamda = 0.8
-    args.epochs = 300
-    args.seed = 2020
     print(args)
     res_dict = train_idgl(args)

@@ -7,10 +7,10 @@ class IDGL(nn.Module):
     Decode neighbors of input graph.
     """
 
-    def __init__(self, nfeat, nhid, nclass, num_head=4, threshold=0.0, lamda=0.8):
+    def __init__(self, nfeat, nhid, nclass, num_head=4, threshold=0.0, ori_ratio=0.8):
         super(IDGL, self).__init__()
         self.GCN = GCN_with_emb(nfeat, nhid, nclass, dropout=0.5)
-        self.GenAdjLayer = IDGL_GenAdjLayer(nhid, num_head, threshold, confidence=1 - lamda)
+        self.GenAdjLayer = IDGL_GenAdjLayer(nhid, num_head, threshold, confidence=1 - ori_ratio)
 
     def forward(self, x, adj, h, emb_only=False):
         """

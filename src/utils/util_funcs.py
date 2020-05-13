@@ -66,6 +66,28 @@ def print_dict(d, end_string='\n\n'):
     print(end_string, end='')
 
 
+def write_dict(d, f_path):
+    with open(f_path, 'a') as f:
+        for key in d.keys():
+            if isinstance(d[key], dict):
+                f.write('\n', end='')
+                print_dict(d[key], end_string='')
+            elif isinstance(d[key], int):
+                f.write('{}: {:04d}'.format(key, d[key]), end=', ')
+            elif isinstance(d[key], float):
+                f.write('{}: {:.4f}'.format(key, d[key]), end=', ')
+            else:
+                f.write('{}: {}'.format(key, d[key]), end=', ')
+        f.write(str(res_dict['Env_name']) + '\n')
+        f.write(str(res_dict['Train States:']) + '\n')
+        f.write(str(res_dict['para_dict']) + '\n')
+        f.write('Paper Results:\n' + str(res_dict['Paper M-Results:']) + '\n')
+        f.write(str(res_dict['Paper F-Results:']) + '\n')
+        f.write('Author Results:\n' + str(res_dict['Author M-Results:']) + '\n')
+        f.write(str(res_dict['Author F-Results:']) + '\n\n')
+        f.close()
+
+
 def time2str(t):
     if t > 86400:
         return '{:.2f}day'.format(t / 86400)

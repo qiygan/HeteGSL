@@ -3,8 +3,8 @@ server = 'S5'
 import os
 import sys
 
-sys.path.append('../')
-sys.path.append(os.getcwd())
+sys.path.append('../../')
+cur_path = os.getcwd()
 
 from utils.util_funcs import *
 
@@ -20,15 +20,16 @@ import subprocess
 
 
 class IDGL_Config:
-    model = 'IDGL'
     # model configs
     num_head = 4
+    num_hidden=8
     epochs = 300
     seed = 2020
     weight_decay = 5e-4
-    lamda = 0.8
+    ori_ratio = 0.8
     lr = 0.01
     # other settings
+    gpu = 0  # -1 to use cpu
     out_path = '/results/IDGL/'
 
     def __init__(self, dataset='cora'):
@@ -66,9 +67,9 @@ def grid_tune_single_var(to_be_tuned, para_ind, run_times, resd):
             exec("args.{} = tuning_set[para_i]".format(to_be_tuned))
             # * ================ Start Running ===================
             print(' <seed={}>'.format(seed), end='')
-            command_line = gen_run_commands(python_command, 'train.py', IDGL_Config)
+            command_line = gen_run_commands(python_command, cur_path + '/train.py', IDGL_Config)
             print(command_line)
-            result = subprocess.run(command_line, stdout=subprocess.PIPE)
+            result = subprocess.run(command_line, stdout=subprocess.PIPE, shell=True)
             # print(result.stdout)
             # * ================ Result Processing ===============
             # fname = '{}.dat'.format(paths['out_path'])
