@@ -3,8 +3,9 @@ server, gpu_id = 'S5', 3
 import os
 import sys
 
-sys.path.append('../../')
-cur_path = os.getcwd()
+cur_path = os.path.abspath(os.path.dirname(__file__))
+root_path = cur_path.split('/models')[0]
+sys.path.append(root_path)
 
 from utils.util_funcs import *
 
@@ -20,22 +21,22 @@ import subprocess
 
 
 class IDGL_Config:
-    # model configs
-    num_head = 4
-    num_hidden = 8
-    epochs = 300
-    # epochs = 10
-    seed = 2020
-    weight_decay = 5e-4
-    ori_ratio = 0.8
-    lr = 0.01
-    # other settings
-    gpu = 0  # -1 to use cpu
-    out_path = '/home/zja/PyProject/HeteGSL/results/IDGL/'
-    exp_name = 'IDGL_res_'
 
     def __init__(self, dataset='cora'):
         self.dataset = dataset
+        # model configs
+        self.num_head = 4
+        self.num_hidden = 8
+        self.epochs = 300
+        # epochs = 10
+        self.seed = 2020
+        self.weight_decay = 5e-4
+        self.ori_ratio = 0.8
+        self.lr = 0.01
+        # other settings
+        self.gpu = 0  # -1 to use cpu
+        self.out_path = '/home/zja/PyProject/HeteGSL/results/IDGL/'
+        self.exp_name = 'IDGL_res_'
 
 
 def grid_search():
@@ -88,7 +89,7 @@ def grid_tune_single_var(to_be_tuned, para_ind, run_times, resd):
 to_be_tuned = 'lr'
 para_ind = 'none'
 dataset = 'cora'
-run_times = 3
+run_times = 10
 # * ================ Model Variables ================
 # File paths
 log_path = '../results/IDGL'
@@ -106,4 +107,4 @@ print('Hyper-paramter tuning finished!! tuning time ={}\nPic_path = {} ,'
 # fname = dataset + mode_name + '_mean_results.txt'
 # resd.result_to_exl(fname)
 # * =============== Server Commands ===================
-# python /home/zja/PyProject/RLBasedGSL
+# python /home/zja/PyProject/HeteGSL/src/models/IDGL/tuneIDGL.py

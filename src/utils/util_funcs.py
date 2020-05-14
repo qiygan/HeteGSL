@@ -1,6 +1,10 @@
+import numpy as np
+
 def shell_init(server='S5', gpu_id=0, f_prefix=''):
     '''
+    Features
     Ignore wanrnings
+    Ignore numpy warnings
     Set paths
     :param gpu_id:
     :return:
@@ -8,7 +12,7 @@ def shell_init(server='S5', gpu_id=0, f_prefix=''):
     import os
     import warnings
     import sys
-
+    np.seterr(invalid='ignore')
     warnings.filterwarnings("ignore")
     if server == 'Xy':
         SOURCE_PATH = '/home/chopin/zja/PyProject/HeteGSL/' + f_prefix
@@ -23,7 +27,6 @@ def shell_init(server='S5', gpu_id=0, f_prefix=''):
 
 
 def seed_init(seed):
-    import numpy as np
     import torch
     import random
     random.seed(seed)

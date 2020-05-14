@@ -57,8 +57,10 @@ class Results_dealer:
         out_df = pd.DataFrame.from_records(out_list).T
         out_df.columns = ['parameters', *metric_set]
         with open(f_name, 'a+') as f:
-            f.write('\nMean:' + str(out_df[metric_set].mean()) + '\n')
-            f.write('Std:' + str(out_df[metric_set].std()) + '\n')
+            f.write('\n\n' + '#' * 10 + 'AVG RESULTS' + '#' * 10)
+            f.write('\nMean:' + str(out_df[metric_set].mean()).replace('\ndtype: float64', '') + '\n')
+            f.write('Std:' + str(out_df[metric_set].std()).replace('\ndtype: float64', '') + '\n')
+            f.write('#' * 10 + '###########' + '#' * 10)
 
     def result_to_exl(self, fname):
         def _res_to_df_dblp(fname):
