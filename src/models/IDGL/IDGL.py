@@ -1,4 +1,3 @@
-from models.IDGL.GCN_with_emb import GCN_with_emb
 from models.IDGL.layers import *
 
 
@@ -63,27 +62,3 @@ class GCN_with_emb(nn.Module):
         return F.log_softmax(x2, dim=1), x.detach()
         # ! Note that the detach() operation is vital, 下一个循环中我们要根据adj update的是metric向量而不是网络参数
 
-
-class GCN(nn.Module):
-    def __init__(self, nfeat, nhid, nclass, dropout=0.2):
-        super(GCN, self).__init__()
-        self.normalize = False
-        self.attention = False
-
-        self.gc1 = GraphConvolution(nfeat, nhid, bias=False)
-        self.gc2 = GraphConvolution(nhid, nclass, bias=False)
-        self.dropout = dropout
-
-    def forward(self, x, adj, emb_only=False):
-        x = self.gc1(x, adj)
-        if self.normalize:
-            x = F.normalize(x, p=2, dim=1)
-        x = F.relu(x)
-        x = F.dropout(x, self.dropout, training=self.training)
-        x = self.gc2(x, adj)
-        if self.normalize:
-            x = F.normalize(x, p=2, dim=1)
-        if emb_only:
-            return x
-        x = F.relu(x)
-        return F.log_softmax(x, dim=1)
