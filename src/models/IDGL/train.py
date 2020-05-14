@@ -1,19 +1,10 @@
-"""
-Graph Attention Networks in DGL using SPMV optimization.
-Multiple heads are also batched together for faster training.
-References
-----------
-Paper: https://arxiv.org/abs/1710.10903
-Author's code: https://github.com/PetarV-/GAT
-Pytorch implementation: https://github.com/Diego999/pyGAT
-"""
 import sys
 # sys.path.append('../')
-from utils.util_funcs import shell_init,seed_init
+from utils.util_funcs import *
 
 #
 # shell_init(server='S5', gpu_id=3)
-# shell_init(server='S5', gpu_id=5)
+# shell_init(server='S5', gpu_id=2)
 # shell_init(server='S5', gpu_id=4, f_prefix='src/models/IDGL')
 import argparse
 import networkx as nx
@@ -134,7 +125,7 @@ def train_idgl(args):
     print()
     acc = evaluate(model, features, labels, test_mask, adj)
     print("Test Accuracy {:.4f}".format(acc))
-    res_dict = {'parameters': args, 'res': acc}
+    res_dict = {'parameters': args.__dict__, 'res': {'acc': '{:.4f}'.format(acc)}}
     return res_dict
 
 
@@ -146,7 +137,7 @@ if __name__ == '__main__':
                         help="dataset to use")
     parser.add_argument("--num_head", type=int, default=8,
                         help="number of metric heads")
-    parser.add_argument("--num-hidden", type=int, default=8,
+    parser.add_argument("--num_hidden", type=int, default=8,
                         help="number of hidden units")
     parser.add_argument("--epochs", type=int, default=300,
                         help="number of training epochs")
@@ -158,8 +149,11 @@ if __name__ == '__main__':
                         help="ratio of retain the original graph")
     parser.add_argument("--lr", type=float, default=0.005,
                         help="learning rate")
-    parser.add_argument('--out_path', type=str, default='/results/IDGL/',
+    parser.add_argument('--out_path', type=str, default='results/IDGL/',
                         help="path of results")
+    parser.add_argument('--exp_name', type=str, default='IDGL_Results.txt',
+                        help="name of the experiment")
     args = parser.parse_args()
     print(args)
     res_dict = train_idgl(args)
+    write_dict(res_dict, args.out_path + args.exp_name)

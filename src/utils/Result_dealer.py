@@ -7,8 +7,10 @@ import os
 from utils.util_funcs import *
 import gc
 
+
 class Results_dealer:
     """Collect running results"""
+
     def __init__(self, dataset, res_fpath):
         self.dataset = dataset
         self.result_fpath = res_fpath
@@ -26,6 +28,37 @@ class Results_dealer:
             out_file.write(str(res_dict['Train States:']) + '\n')
             out_file.write(str(res_dict['para_dict']) + '\n')
             out_file.write(str(res_dict['exp_results']) + '\n')
+
+    def calc_mean_std(self, f_name, metric_set=['acc']):
+        """
+        Load results from f_name and calculate mean and std value
+        """
+        # Init records
+        parameters = {}
+        for m in metric_set:  # init metric dict
+            exec('{}=dict()'.format(m))
+        eid = 0
+        # Load records
+        with open(f_name, 'r') as f:
+            res_lines = f.readlines()
+            for line in res_lines:
+                if line[0] == '{':
+                    d = ast.literal_eval(line.strip('\n'))
+                    if 'dataset' in d.keys():  # parameters
+                        eid += 1
+                        parameters[eid] = line.strip('\n')
+                    else:  # results
+                        for metric in metric_set:
+                            if metric in d.keys():
+                                exec('{}[eid]=float(d[\'{}\'])'.format(metric, metric))
+        exec('out_list_ = [parameters,{}]'.format(str(metric_set).replace('\'', '').strip('[').strip(']')), globals(),
+             locals())
+        out_list = locals()["out_list_"]
+        out_df = pd.DataFrame.from_records(out_list).T
+        out_df.columns = ['parameters', *metric_set]
+        with open(f_name, 'a+') as f:
+            f.write('\nMean:' + str(out_df[metric_set].mean()) + '\n')
+            f.write('Std:' + str(out_df[metric_set].std()) + '\n')
 
     def result_to_exl(self, fname):
         def _res_to_df_dblp(fname):
@@ -57,8 +90,9 @@ class Results_dealer:
                     continue
             out_list = [exp_name, a_nmi, a_mi_f1, a_ma_f1, p_nmi, p_mi_f1, p_ma_f1, exp_settings]
             out_df = pd.DataFrame.from_records(out_list)
-            out_df.rename(index={0: 'exp_name', 1: 'a_nmi', 2: 'a_mi_f1', 3: 'a_ma_f1', 4: 'p_nmi', 5: 'p_mi_f1', 6: 'p_ma_f1',
-                                 7: 'exp_settings'}, inplace=True)
+            out_df.rename(
+                index={0: 'exp_name', 1: 'a_nmi', 2: 'a_mi_f1', 3: 'a_ma_f1', 4: 'p_nmi', 5: 'p_mi_f1', 6: 'p_ma_f1',
+                       7: 'exp_settings'}, inplace=True)
             return out_df
 
         def _res_to_df_default(fname):
@@ -98,3 +132,8 @@ class Results_dealer:
             out_df = _res_to_df_default(fname)
         out_df.to_excel(fname[:-4] + '_xl.xlsx')  # Strip .txts
         print('{} saved into excel files'.format(fname))
+
+
+if __name__ == '__main__':
+    resd = Results_dealer('cora', '')
+    resd.calc_mean_std('/home/zja/PyProject/HeteGSL/results/IDGL/IDGL_res_05-14 09:5724.txt')
