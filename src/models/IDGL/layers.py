@@ -3,6 +3,7 @@ import math
 import torch.nn as nn
 from torch.nn.parameter import Parameter
 
+
 class Metric_calc_layer(nn.Module):
     def __init__(self, nhid):
         super().__init__()
@@ -13,41 +14,70 @@ class Metric_calc_layer(nn.Module):
         return h * self.weight
 
 
-class IDGL_GenAdjLayer(nn.Module):
+class IDGL_AdjGenerator(nn.Module):
     """
     Decode neighbors of input graph.
     """
 
-    def __init__(self, nhid,
+    def __init__(self, n_feat, n_hidden,
                  num_head=4,
-                 threshold=0.1, #Cora 0.0
-                 confidence=0.1):
-        super(IDGL_GenAdjLayer, self).__init__()
+                 threshold=0.1):
+        super(IDGL_AdjGenerator, self).__init__()
         self.threshold = threshold
-        self.metric_layer = nn.ModuleList()
+        self.metric_layer_emb = nn.ModuleList()
+        self.metric_layer_feat = nn.ModuleList()
         for i in range(num_head):
-            self.metric_layer.append(Metric_calc_layer(nhid))
+            self.metric_layer_feat.append(Metric_calc_layer(n_feat))
+            self.metric_layer_emb.append(Metric_calc_layer(n_hidden))
         self.num_head = num_head
-        self.confidence = confidence
 
-    def forward(self, h, adj):
+    def normalize_adj_torch(self, adj, mode='sc'):
+        """Row-normalize sparse matrix"""
+        rowsum = torch.sum(adj, 1)
+        r_inv_sqrt = torch.pow(rowsum + 1e-8, -0.5).flatten()
+        r_inv_sqrt[torch.isinf(r_inv_sqrt)] = 0.
+        r_mat_inv_sqrt = torch.diag(r_inv_sqrt)
+        normalized_adj = torch.mm(torch.mm(r_mat_inv_sqrt, adj), r_mat_inv_sqrt)
+        return normalized_adj
+
+    def forward(self, h, mode='emb'):
         """
 
         Args:
-            h: node_num * hidden_dim
-            adj: original adj
-
+            h: node_num * hidden_dim/feat_dim
+            mode: whether h is emb or feat
         Returns:
 
         """
-        s = torch.zeros((h.shape[0],h.shape[0])).cuda()
+        # TODO Zero mat, necessary?
+        s = torch.zeros((h.shape[0], h.shape[0])).cuda()
         for i in range(self.num_head):
-            h_prime = self.metric_layer[i](h)
+            if mode == 'feat':  # First time, use feat as emb.
+                h_prime = self.metric_layer_feat[i](h)
+            elif mode == 'emb':
+                h_prime = self.metric_layer_emb[i](h)
+            if torch.isnan(h_prime[1, 1]):
+                print()
             s += cos_sim(h_prime, h_prime)
-        s/= self.num_head
-        rst = torch.where(s < self.threshold,torch.zeros_like(s), s )
-        rst = F.normalize(rst,dim=1,p=1) # Row normalization
-        return self.confidence* rst + (1-self.confidence)*adj
+
+        s /= self.num_head
+        # Remove negative values (Otherwise Nans are generated for negative values with power operation
+        s = torch.where(s < self.threshold, torch.zeros_like(s), s)
+        # check whether all positive:  sum(sum(s >= 0)).item() == 7333264
+        # s = self.normalize_adj_torch(s)
+        s = F.normalize(s, dim=1, p=1)  # Row normalization
+        return s
+
+
+# ! Previous version
+#         s = torch.zeros((h.shape[0], h.shape[0])).cuda()
+#         for i in range(self.num_head):
+#             h_prime = self.metric_layer[i](h)
+#             s += cos_sim(h_prime, h_prime)
+#         s /= self.num_head
+#         rst = torch.where(s < self.threshold, torch.zeros_like(s), s)
+#         rst = F.normalize(rst, dim=1, p=1)  # Row normalization
+#         return (1 - self.lambda_) * rst + self.lambda_adj
 
 
 # pylint: disable= no-member, arguments-differ, invalid-name
@@ -55,6 +85,7 @@ class IDGL_GenAdjLayer(nn.Module):
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+
 
 class GraphConvolution(nn.Module):  # GCN AHW
     def __init__(self, in_features, out_features, cuda=True, bias=True):

@@ -6,12 +6,15 @@ class IDGL(nn.Module):
     Decode neighbors of input graph.
     """
 
-    def __init__(self, nfeat, nhid, nclass, num_head=4, threshold=0.0, ori_ratio=0.8):
+    def __init__(self, args, nfeat, nclass):
         super(IDGL, self).__init__()
-        self.GCN = GCN_with_emb(nfeat, nhid, nclass, dropout=0.5)
-        self.GenAdjLayer = IDGL_GenAdjLayer(nhid, num_head, threshold, confidence=1 - ori_ratio)
+        self.GCN = GCN_with_emb(nfeat, args.num_hidden, nclass, dropout=0.5)
+        self.GenAdjLayer = IDGL_AdjGenerator(nfeat, args.num_hidden, args.num_head, args.epsilon)
+        self.lambda_ = args.lambda_
+        self.eta = args.eta
 
-    def forward(self, x, adj, h, emb_only=False):
+
+    def forward(self, x, h, adj, adj_feat, mode):
         """
 
         Args:
@@ -23,14 +26,18 @@ class IDGL(nn.Module):
         Returns:
 
         """
-        if h is None:  # First time, use feat as emb.
-            # ! Bug: feat_dim != emb_dim
-            # adj_new = self.GenAdjLayer(x, adj)
-            adj_new = adj
-        else:
-            adj_new = self.GenAdjLayer(h, adj)
-        logits, h = self.GCN(x, adj_new)
-        return logits, h, adj_new
+        # ! Generate adj
+        if mode == 'feat':
+            adj_sim = self.GenAdjLayer(x, mode='feat')
+            adj_agg = (1 - self.lambda_) * adj_sim + self.lambda_ * adj
+        elif mode == 'emb':
+            adj_sim = self.GenAdjLayer(h, mode='emb')
+            adj_emb = (1 - self.lambda_) * adj_sim + self.lambda_ * adj
+            adj_agg = self.eta * adj_emb + (1 - self.eta) * adj_feat
+
+        # ! Aggregate using adj_agg
+        logits, h = self.GCN(x, adj_agg)
+        return logits, h, adj_sim, adj_agg
 
 
 import torch.nn as nn
@@ -61,4 +68,3 @@ class GCN_with_emb(nn.Module):
         x2 = F.relu(x2)
         return F.log_softmax(x2, dim=1), x.detach()
         # ! Note that the detach() operation is vital, 下一个循环中我们要根据adj update的是metric向量而不是网络参数
-
