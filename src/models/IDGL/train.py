@@ -10,7 +10,7 @@ from utils.util_funcs import *
 # shell_init(server='S5', gpu_id=3)
 # shell_init(server='S5', gpu_id=2)
 # shell_init(server='S5', gpu_id=4, f_prefix='src/models/IDGL')
-shell_init(server='Ali', gpu_id=3)
+shell_init(server='Ali', gpu_id=0)
 import argparse
 import networkx as nx
 import time
@@ -19,6 +19,7 @@ from dgl.data import register_data_args, load_data
 from models.IDGL import IDGL
 import numpy as np
 import torch
+from utils import EarlyStopping
 
 torch.autograd.set_detect_anomaly(True)
 
@@ -131,6 +132,9 @@ def train_idgl(args):
     model = IDGL(args, num_feats, n_classes)
 
     print(model)
+    es_checkpoint = 'temp/IDGL_es_checkpoint.pt'
+    if args.early_stop:
+        stopper = EarlyStopping(patience=100, path=es_checkpoint)
     if cuda:
         model.cuda()
     cla_loss = torch.nn.CrossEntropyLoss()
@@ -146,7 +150,7 @@ def train_idgl(args):
     adj = normalize_adj_torch(adj.to_dense())
     ori_adj_norm = torch.norm(adj, p=2)
     # ! Pretrain
-    for i in range(args.pretrain):
+    for epoch in range(args.pretrain):
         logits, h, adj_sim, adj_feat = model(features, h=None, adj=adj, adj_feat=None, mode='feat')
         loss = cal_loss(args, cla_loss, logits, train_mask, labels, mode='pretrain')
         optimizer.zero_grad()
@@ -155,10 +159,10 @@ def train_idgl(args):
             loss.backward()
         optimizer.step()
         test_acc = evaluate(model, features, labels, test_mask, adj)
-        print("Pretrain Test Accuracy {:.4f}".format(test_acc))
+        print(f"Pretrain Test Accuracy {test_acc:.4f}")
     print("Pretrain Finished!\n")
     # ! Train
-    for epoch in range(args.epochs):
+    for epoch in range(args.max_epoch):
         model.train()
         if epoch >= 3:
             t0 = time.time()
@@ -190,44 +194,25 @@ def train_idgl(args):
 
         val_acc = evaluate(model, features, labels, val_mask, adj)
         test_acc = evaluate(model, features, labels, test_mask, adj)
-        # print("Epoch {:05d} | Time(s) {:.4f} | Loss {:.4f} | TrainAcc {:.4f} |"
-        #       " ValAcc {:.4f} | ETputs(KTEPS) {:.2f}".
-        #       format(epoch, np.mean(dur), loss.item(), train_acc,
-        #              val_acc, n_edges / np.mean(dur) / 1000))
-        print("Epoch {:05d} | Time(s) {:.4f} | Loss {:.4f} | TrainAcc {:.4f} |"
-              " ValAcc {:.4f} | TestAcc {:.4f}".
-              format(epoch, np.mean(dur), loss.item(), train_acc,
-                     val_acc, test_acc))
-        # if epoch % 100 == 0:
-        #     test_acc = evaluate(model, features, labels, test_mask, adj)
-        #     print("Test Accuracy {:.4f}".format(test_acc))
 
+        # print(
+        #     f"Epoch {epoch:05d} | Time(s) {np.mean(dur):.4f} | Loss {loss.item():.4f} | TrainAcc {train_acc:.4f} | ValAcc {val_acc:.4f}")
+        print(
+            f"Epoch {epoch:05d} | Time(s) {np.mean(dur):.4f} | Loss {loss.item():.4f} | TrainAcc {train_acc:.4f} | ValAcc {val_acc:.4f} | TestAcc {test_acc:.4f}")
+        if args.early_stop:
+            if stopper.step(val_acc, model):
+                break
+    if args.early_stop:
+        model.load_state_dict(torch.load(es_checkpoint))
     test_acc = evaluate(model, features, labels, test_mask, adj)
-    print("Test Accuracy {:.4f}".format(test_acc))
-    res_dict = {'parameters': args.__dict__, 'res': {'acc': '{:.4f}'.format(test_acc)}}
+    print(f"Test Accuracy {test_acc:.4f}")
+    res_dict = {'parameters': args.__dict__, 'res': {'acc': f'{test_acc:.4f}'}}
     return res_dict
 
 
 if __name__ == '__main__':
-    # ! Train Configs
     parser = argparse.ArgumentParser(description='GAT_dgl')
-    parser.add_argument("--gpu", type=int, default=0,
-                        help="which GPU to use. Set -1 to use CPU.")
-    parser.add_argument("--dataset", type=str, default='cora',
-                        help="dataset to use")
-    parser.add_argument('--out_path', type=str, default='results/IDGL/',
-                        help="path of results")
-    parser.add_argument('--exp_name', type=str, default='IDGL_Results.txt',
-                        help="name of the experiment")
-    parser.add_argument("--epochs", type=int, default=300,
-                        help="number of training epochs")
-    parser.add_argument("--num_hidden", type=int, default=16,
-                        help="number of hidden units")
-    parser.add_argument("--seed", type=int, default=2020,
-                        help="training seed")
-    parser.add_argument('--weight_decay', type=float, default=5e-4,
-                        help="weight decay")  # Fixme
-    # ! Original IDGL Configs
+    # ! IDGL model configs
     parser.add_argument("--lambda_", type=float, default=0.9,
                         help="ratio of retain the original graph")
     parser.add_argument("--eta", type=float, default=0.1)
@@ -240,12 +225,30 @@ if __name__ == '__main__':
     parser.add_argument("--delta", type=float, default=4e-5)
     parser.add_argument("--T", type=int, default=10)
     parser.add_argument("--lr", type=float, default=1e-2, help="learning rate")
+    # ! Other model configs
     parser.add_argument("--dropout", type=float, default=0.5, help="dropout rate")
-    # ! Added Model configs
-    parser.add_argument("--pretrain", type=int, default=100, help="pretrain epochs")
+    parser.add_argument("--num_hidden", type=int, default=16,
+                        help="number of hidden units")
+    parser.add_argument("--seed", type=int, default=2020,
+                        help="training seed")
+    parser.add_argument('--weight_decay', type=float, default=5e-4,
+                        help="weight decay")  # Fixme
+
+    # ! Train Configs
+    parser.add_argument('--early-stop', action='store_true', default=True, help="indicates whether to use early stop or not")
+    parser.add_argument("--gpu", type=int, default=0,
+                        help="which GPU to use. Set -1 to use CPU.")
+    parser.add_argument("--dataset", type=str, default='cora',
+                        help="dataset to use")
+    parser.add_argument('--out_path', type=str, default='results/IDGL/',
+                        help="path of results")
+    parser.add_argument('--exp_name', type=str, default='IDGL_Results.txt',
+                        help="name of the experiment")
+    parser.add_argument("--max_epoch", type=int, default=300,
+                        help="number of training max_epoch")
+    parser.add_argument("--pretrain", type=int, default=100, help="pretrain max_epoch")
 
     args = parser.parse_args()
-    args.epochs = 200
     args.pretrain = 100
     print(args)
     res_dict = train_idgl(args)

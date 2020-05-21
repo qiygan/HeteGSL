@@ -6,11 +6,12 @@ import torch
 
 
 class EarlyStopping:
-    def __init__(self, patience=10):
+    def __init__(self, patience=10, path='es_checkpoint.pt'):
         self.patience = patience
         self.counter = 0
         self.best_score = None
         self.early_stop = False
+        self.path = path
 
     def step(self, acc, model):
         score = acc
@@ -30,4 +31,4 @@ class EarlyStopping:
 
     def save_checkpoint(self, model):
         '''Saves model when validation loss decrease.'''
-        torch.save(model.state_dict(), 'es_checkpoint.pt')
+        torch.save(model.state_dict(), self.path)

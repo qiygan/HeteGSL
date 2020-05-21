@@ -16,7 +16,7 @@ class Results_dealer:
         self.result_fpath = res_fpath
 
     def _avg_list(self, list):
-        return '{:.4f}'.format(sum(list) / len(list))
+        return f'{sum(list) / len(list):.4f}'
 
     def save_model_results(self, res_dict):
         # create important configs

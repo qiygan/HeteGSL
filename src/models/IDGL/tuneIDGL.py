@@ -23,7 +23,7 @@ import subprocess
 class IDGL_Config:
 
     def __init__(self, dataset='cora'):
-        # IDGL configs
+        # IDGL configs # Table 7 in paper
         self.lambda_ = 0.9
         self.eta = 0.1  # balance coef. of adj_emb and adj_feat
         self.alpha = 0.2
@@ -34,8 +34,8 @@ class IDGL_Config:
         self.delta = 4e-5
         self.T = 10
         # other model settings
-        self.epochs = 300
-        self.dropout = 0.5  # FIXME
+        self.max_epoch = 300
+        self.dropout = 0.5
         self.num_hidden = 16
         # Train configs
         self.seed = 2020
