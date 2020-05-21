@@ -34,6 +34,7 @@ class IDGL_AdjGenerator(nn.Module):
     def normalize_adj_torch(self, adj, mode='sc'):
         """Row-normalize sparse matrix"""
         rowsum = torch.sum(adj, 1)
+        # r_inv_sqrt = torch.pow(rowsum, -0.5).flatten()  # Abandoned, gen nan for zero values.
         r_inv_sqrt = torch.pow(rowsum + 1e-8, -0.5).flatten()
         r_inv_sqrt[torch.isinf(r_inv_sqrt)] = 0.
         r_mat_inv_sqrt = torch.diag(r_inv_sqrt)
@@ -51,36 +52,21 @@ class IDGL_AdjGenerator(nn.Module):
         """
         # TODO Zero mat, necessary?
         s = torch.zeros((h.shape[0], h.shape[0])).cuda()
+        zero_lines = torch.where(torch.sum(h, 1) == 0)[0]
+        if len(zero_lines) > 0:
+            raise ValueError('{} zero lines in {}s!\nZero lines:{}'.format(len(zero_lines), mode, zero_lines))
         for i in range(self.num_head):
             if mode == 'feat':  # First time, use feat as emb.
-                h_prime = self.metric_layer_feat[i](h)
+                weighted_h = self.metric_layer_feat[i](h)
             elif mode == 'emb':
-                h_prime = self.metric_layer_emb[i](h)
-            if torch.isnan(h_prime[1, 1]):
-                print()
-            s += cos_sim(h_prime, h_prime)
-
+                weighted_h = self.metric_layer_emb[i](h)
+            s += cos_sim(weighted_h, weighted_h)
         s /= self.num_head
         # Remove negative values (Otherwise Nans are generated for negative values with power operation
         s = torch.where(s < self.threshold, torch.zeros_like(s), s)
-        # check whether all positive:  sum(sum(s >= 0)).item() == 7333264
         # s = self.normalize_adj_torch(s)
         s = F.normalize(s, dim=1, p=1)  # Row normalization
         return s
-
-
-# ! Previous version
-#         s = torch.zeros((h.shape[0], h.shape[0])).cuda()
-#         for i in range(self.num_head):
-#             h_prime = self.metric_layer[i](h)
-#             s += cos_sim(h_prime, h_prime)
-#         s /= self.num_head
-#         rst = torch.where(s < self.threshold, torch.zeros_like(s), s)
-#         rst = F.normalize(rst, dim=1, p=1)  # Row normalization
-#         return (1 - self.lambda_) * rst + self.lambda_adj
-
-
-# pylint: disable= no-member, arguments-differ, invalid-name
 
 import torch
 import torch.nn as nn
@@ -109,6 +95,9 @@ class GraphConvolution(nn.Module):  # GCN AHW
     def forward(self, inputs, adj):
         support = torch.spmm(inputs, self.weight)  # HW in GCN
         output = torch.spmm(adj, support)  # AHW
+        zero_lines = torch.where(torch.sum(output, 1) == 0)[0]
+        if len(zero_lines) > 0:
+            print('{} zero lines in embeddings!\nZero lines:{}'.format(len(zero_lines), zero_lines))
         if self.bias is not None:
             return output + self.bias
         else:

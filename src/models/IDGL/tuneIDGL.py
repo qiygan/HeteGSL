@@ -25,27 +25,30 @@ class IDGL_Config:
     def __init__(self, dataset='cora'):
         # IDGL configs
         self.lambda_ = 0.9
-        self.eta = 0.1 # balance coef. of adj_emb and adj_feat
+        self.eta = 0.1  # balance coef. of adj_emb and adj_feat
         self.alpha = 0.2
         self.beta = 0.0
-        self.gamma = 0.0 #
-        self.epsilon = 0.0 #
+        self.gamma = 0.0  #
+        self.epsilon = 0.0  #
         self.num_head = 4  # m: Num of metric heads
         self.delta = 4e-5
         self.T = 10
         # other model settings
         self.epochs = 300
-        self.dropout = 0.5 # FIXME
+        self.dropout = 0.5  # FIXME
         self.num_hidden = 16
         # Train configs
         self.seed = 2020
-        self.weight_decay = 5e-4 # Fixed for all dataset
-        self.lr = 0.01 # Fixed lr for all dataset
+        self.weight_decay = 5e-4  # Fixed for all dataset
+        self.lr = 0.01  # Fixed lr for all dataset
         # Exp configs
         self.dataset = dataset
         self.gpu = 0  # -1 to use cpu
         self.out_path = '/home/zja/PyProject/HeteGSL/results/IDGL/'
         self.exp_name = 'IDGL_res_'
+        #
+        self.pretrain = 100
+        self.dropout = 0.5
 
 
 def grid_search():
