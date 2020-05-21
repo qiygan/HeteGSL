@@ -19,15 +19,9 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="72ceada8-47c2-4be1-8ec3-3863fcb97c45" name="Default Changelist" comment="Check if origin GCN works-">
-      <change afterPath="$PROJECT_DIR$/src/utils/early_stopper.py" afterDir="false" />
+    <list default="true" id="72ceada8-47c2-4be1-8ec3-3863fcb97c45" name="Default Changelist" comment="Nan gradient bug fixed (caused by dropout before embedding detach)">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/models/IDGL/IDGL.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/IDGL/IDGL.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/models/IDGL/layers.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/IDGL/layers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/models/IDGL/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/IDGL/train.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/models/IDGL/tuneIDGL.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/IDGL/tuneIDGL.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/Result_dealer.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/result_dealer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/early_stopper.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/early_stopper.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -64,7 +58,7 @@
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="restartRequiresConfirmation" value="false" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="settings.editor.selected.configurable" value="org.jetbrains.plugins.github.ui.GithubSettingsConfigurable" />
   </component>
   <component name="PyCoverageOptionsProvider">
     <option name="myUseBundledCoveragePy" value="true" />
@@ -272,7 +266,7 @@
       <workItem from="1589958484087" duration="1403000" />
       <workItem from="1589959901158" duration="3579000" />
       <workItem from="1589987029400" duration="57000" />
-      <workItem from="1590027370488" duration="1143000" />
+      <workItem from="1590027370488" duration="2262000" />
     </task>
     <task id="LOCAL-00001" summary="init 2">
       <created>1589287322874</created>
@@ -337,7 +331,14 @@
       <option name="project" value="LOCAL" />
       <updated>1589783084830</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="Nan gradient bug fixed (caused by dropout before embedding detach)">
+      <created>1590028563779</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1590028563779</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -348,7 +349,13 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="CUSTOM_BOOLEAN_PROPERTIES">
+                <map>
+                  <entry key="Show.Git.Branches" value="true" />
+                </map>
+              </option>
+            </State>
           </value>
         </entry>
       </map>
@@ -364,7 +371,8 @@
     <MESSAGE value="Command line operation finished." />
     <MESSAGE value="Code revisited, deleted redundant lines." />
     <MESSAGE value="Check if origin GCN works-" />
-    <option name="LAST_COMMIT_MESSAGE" value="Check if origin GCN works-" />
+    <MESSAGE value="Nan gradient bug fixed (caused by dropout before embedding detach)" />
+    <option name="LAST_COMMIT_MESSAGE" value="Nan gradient bug fixed (caused by dropout before embedding detach)" />
   </component>
   <component name="WindowStateProjectService">
     <state x="414" y="171" key="#Deployment" timestamp="1589959888113">
@@ -423,29 +431,29 @@
       <screen x="0" y="0" width="1440" height="900" />
     </state>
     <state x="482" y="164" key="Github.UntrackedFilesDialog/0.0.1440.900@0.0.1440.900" timestamp="1589267200465" />
-    <state width="1018" height="250" key="GridCell.Tab.0.bottom" timestamp="1590028308602">
+    <state width="1018" height="250" key="GridCell.Tab.0.bottom" timestamp="1590028879408">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state width="1018" height="250" key="GridCell.Tab.0.bottom/0.0.1440.900@0.0.1440.900" timestamp="1590028308602" />
+    <state width="1018" height="250" key="GridCell.Tab.0.bottom/0.0.1440.900@0.0.1440.900" timestamp="1590028879408" />
     <state width="1876" height="392" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1587282886192" />
     <state width="699" height="212" key="GridCell.Tab.0.bottom/0.23.1440.877@0.23.1440.877" timestamp="1589876068473" />
-    <state width="1018" height="250" key="GridCell.Tab.0.center" timestamp="1590028308600">
+    <state width="1018" height="250" key="GridCell.Tab.0.center" timestamp="1590028879407">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state width="1018" height="250" key="GridCell.Tab.0.center/0.0.1440.900@0.0.1440.900" timestamp="1590028308600" />
+    <state width="1018" height="250" key="GridCell.Tab.0.center/0.0.1440.900@0.0.1440.900" timestamp="1590028879407" />
     <state width="1876" height="392" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1587282886192" />
     <state width="699" height="212" key="GridCell.Tab.0.center/0.23.1440.877@0.23.1440.877" timestamp="1589876068472" />
-    <state width="1018" height="250" key="GridCell.Tab.0.left" timestamp="1590028308599">
+    <state width="1018" height="250" key="GridCell.Tab.0.left" timestamp="1590028879406">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state width="1018" height="250" key="GridCell.Tab.0.left/0.0.1440.900@0.0.1440.900" timestamp="1590028308599" />
+    <state width="1018" height="250" key="GridCell.Tab.0.left/0.0.1440.900@0.0.1440.900" timestamp="1590028879406" />
     <state width="1398" height="304" key="GridCell.Tab.0.left/0.0.1440.900@0.23.1440.877" timestamp="1589295608806" />
     <state width="1876" height="392" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1587282886192" />
     <state width="699" height="212" key="GridCell.Tab.0.left/0.23.1440.877@0.23.1440.877" timestamp="1589876068471" />
-    <state width="1018" height="250" key="GridCell.Tab.0.right" timestamp="1590028308601">
+    <state width="1018" height="250" key="GridCell.Tab.0.right" timestamp="1590028879408">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state width="1018" height="250" key="GridCell.Tab.0.right/0.0.1440.900@0.0.1440.900" timestamp="1590028308601" />
+    <state width="1018" height="250" key="GridCell.Tab.0.right/0.0.1440.900@0.0.1440.900" timestamp="1590028879408" />
     <state width="1876" height="392" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1587282886192" />
     <state width="699" height="212" key="GridCell.Tab.0.right/0.23.1440.877@0.23.1440.877" timestamp="1589876068472" />
     <state width="1087" height="231" key="GridCell.Tab.1.bottom" timestamp="1589975372319">
@@ -472,20 +480,20 @@
     <state width="1087" height="231" key="GridCell.Tab.1.right/0.0.1440.900@0.0.1440.900" timestamp="1589975372319" />
     <state width="1876" height="314" key="GridCell.Tab.1.right/0.0.1920.1040@0.0.1920.1040" timestamp="1587279820181" />
     <state width="699" height="225" key="GridCell.Tab.1.right/0.23.1440.877@0.23.1440.877" timestamp="1589942458351" />
-    <state x="267" y="150" key="SettingsEditor" timestamp="1589987057607">
+    <state x="267" y="150" key="SettingsEditor" timestamp="1590029613027">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state x="267" y="150" key="SettingsEditor/0.0.1440.900@0.0.1440.900" timestamp="1589987057607" />
+    <state x="267" y="150" key="SettingsEditor/0.0.1440.900@0.0.1440.900" timestamp="1590029613027" />
     <state x="461" y="184" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1587261853284" />
     <state x="267" y="150" key="SettingsEditor/0.23.1440.877@0.23.1440.877" timestamp="1589946961326" />
     <state width="498" height="451" key="SwitcherDM" timestamp="1589791185893">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
     <state width="498" height="451" key="SwitcherDM/0.0.1440.900@0.0.1440.900" timestamp="1589791185893" />
-    <state x="320" y="190" key="Vcs.Push.Dialog.v2" timestamp="1589783087315">
+    <state x="320" y="190" key="Vcs.Push.Dialog.v2" timestamp="1590028565546">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state x="320" y="190" key="Vcs.Push.Dialog.v2/0.0.1440.900@0.0.1440.900" timestamp="1589783087315" />
+    <state x="320" y="190" key="Vcs.Push.Dialog.v2/0.0.1440.900@0.0.1440.900" timestamp="1590028565546" />
     <state width="720" height="452" key="XDebugger.FullValuePopup" timestamp="1589943507763">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
