@@ -23,7 +23,7 @@ import subprocess
 class IDGL_Config:
 
     def __init__(self, dataset='cora'):
-        # IDGL configs # Table 7 in paper
+        # ! IDGL configs # Table 7 in paper
         self.lambda_ = 0.9
         self.eta = 0.1  # balance coef. of adj_emb and adj_feat
         self.alpha = 0.2
@@ -33,22 +33,23 @@ class IDGL_Config:
         self.num_head = 4  # m: Num of metric heads
         self.delta = 4e-5
         self.T = 10
-        # other model settings
-        self.max_epoch = 300
+        # ! Other settings in paper
+        self.lr = 0.01  # Fixed lr for all dataset
         self.dropout = 0.5
         self.num_hidden = 16
-        # Train configs
-        self.seed = 2020
         self.weight_decay = 5e-4  # Fixed for all dataset
-        self.lr = 0.01  # Fixed lr for all dataset
+        # ! My config
         # Exp configs
         self.dataset = dataset
         self.gpu = 0  # -1 to use cpu
         self.out_path = '/home/zja/PyProject/HeteGSL/results/IDGL/'
         self.exp_name = 'IDGL_res_'
-        #
+        # Train configs
+        self.max_epoch = 300
+        self.seed = 2020
+        self.early_stop = 1
         self.pretrain = 100
-        self.dropout = 0.5
+
 
 
 def grid_search():
@@ -94,7 +95,7 @@ def grid_tune_single_var(to_be_tuned, para_ind, run_times, resd):
             #     res_dict, epoch_res = data_loaded['res_dict'], data_loaded['epoch_dict']
             # * =================================================
         resd.calc_mean_std(args.out_path + args.exp_name)
-    return pic_path
+    return None
 
 
 # * ============ HyperParaTuning Variables ==========
@@ -111,12 +112,7 @@ resd = Results_dealer(dataset, '../results/')
 
 # * ============== HyperParaTuning ===================
 start_time = time.time()
-pic_path = grid_tune_single_var(to_be_tuned, para_ind, run_times, resd)
+grid_tune_single_var(to_be_tuned, para_ind, run_times, resd)
 tuning_time = time.time() - start_time
-print('Hyper-paramter tuning finished!! tuning time ={}\nPic_path = {} ,'
-      .format(time2str(tuning_time), pic_path))
-# Save results to excel file
-# fname = dataset + mode_name + '_mean_results.txt'
-# resd.result_to_exl(fname)
 # * =============== Server Commands ===================
 # python /home/zja/PyProject/HeteGSL/src/models/IDGL/tuneIDGL.py
