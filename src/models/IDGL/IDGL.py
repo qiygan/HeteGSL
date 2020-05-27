@@ -6,11 +6,11 @@ class IDGL(nn.Module):
     Decode neighbors of input graph.
     """
 
-    def __init__(self, args, nfeat, nclass):
+    def __init__(self, args, nfeat, nclass, dev):
         super(IDGL, self).__init__()
         # self.GCN = GCN_with_emb(nfeat, args.num_hidden, nclass, dropout=args.dropout)
         self.GCN = GCN2(nfeat, args.num_hidden, nclass, dropout=args.dropout)
-        self.GenAdjLayer = IDGL_AdjGenerator(nfeat, args.num_hidden, args.num_head, args.epsilon, args.gpu >= 0)
+        self.GenAdjLayer = IDGL_AdjGenerator(nfeat, args.num_hidden, args.num_head, args.epsilon, dev)
         self.lambda_ = args.lambda_
         self.eta = args.eta
 

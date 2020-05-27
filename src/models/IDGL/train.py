@@ -83,6 +83,14 @@ def cal_loss(args, cla_loss, logits, train_mask, labels, adj=None, features=None
 def train_idgl(args):
     data = load_data(args)
     seed_init(seed=args.seed)
+    if args.tpu > 0:
+        # TPU
+        import torch_xla
+        import torch_xla.core.xla_model as xm
+        dev = xm.xla_device()
+    else:
+        # CPU or GPU
+        dev = torch.device("cuda:0" if args.gpu>=0 else "cpu")
 
     features = torch.FloatTensor(data.features)
     labels = torch.LongTensor(data.labels)
@@ -108,17 +116,11 @@ def train_idgl(args):
            val_mask.int().sum().item(),
            test_mask.int().sum().item()))
     # print(torch.where(test_mask)) # Same train/test split with different init_seed
-    if args.gpu < 0:
-        cuda = False
-    else:
-        cuda = True
-        # torch.cuda.set_device(args.gpu)
-        features = features.cuda()
-        labels = labels.cuda()
-        train_mask = train_mask.cuda()
-        val_mask = val_mask.cuda()
-        test_mask = test_mask.cuda()
-
+    features = features.to(dev)
+    labels = labels.to(dev)
+    train_mask = train_mask.to(dev)
+    val_mask = val_mask.to(dev)
+    test_mask = test_mask.to(dev)
     g = data.graph
     # add self loop
     g.remove_edges_from(nx.selfloop_edges(g))
@@ -126,16 +128,15 @@ def train_idgl(args):
     g.add_edges(g.nodes(), g.nodes())
     n_edges = g.number_of_edges()
     # create model
-    model = IDGL(args, num_feats, n_classes)
+    model = IDGL(args, num_feats, n_classes, dev)
 
     print(model)
     es_checkpoint = 'temp/' + time.strftime('%m-%d %H-%M-%S', time.localtime()) + '.pt'
     stopper = EarlyStopping(patience=80, path=es_checkpoint)
-    if cuda:
-        model.cuda()
-        adj = g.adjacency_matrix().cuda()
-    else:
-        adj = g.adjacency_matrix()
+
+    model.to(dev)
+    adj = g.adjacency_matrix().to(dev)
+
     # cla_loss = torch.nn.CrossEntropyLoss()
     cla_loss = torch.nn.NLLLoss()
     # use optimizer
@@ -251,6 +252,8 @@ if __name__ == '__main__':
                         help="dataset to use")
     parser.add_argument("--gpu", type=int, default=0,
                         help="which GPU to use. Set -1 to use CPU.")
+    parser.add_argument("--tpu", type=int, default=-1,
+                        help="use TPU or not")
     parser.add_argument('--out_path', type=str, default='results/IDGL/',
                         help="path of results")
     parser.add_argument('--exp_name', type=str, default='IDGL_Results.txt',
@@ -267,7 +270,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     # args.pretrain_epochs = 0
     # args.seed = 5 # Bad seed
-    # args.gpu = 0
+    args.gpu = -1
     # args.seed = 0
     print(args)
     shell_init(server='Ali', gpu_id=args.gpu)

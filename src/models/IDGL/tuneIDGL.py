@@ -49,6 +49,7 @@ class IDGL_Config:
         # Exp configs
         self.dataset = dataset
         self.gpu = gpu  # -1 to use cpu
+        self.tpu = 0
         self.out_path = 'results/IDGL/'
         self.activation = 'Elu'
         self.activation = 'Relu'
@@ -93,7 +94,7 @@ def grid_tune_single_var(to_be_tuned, para_ind, run_times, resd):
             exec("args.{} = tuning_set[para_i]".format(to_be_tuned))
             # * ================ Start Running ===================
             print(' <seed={}>'.format(args.seed), end='')
-            command_line = gen_run_commands(python_command, cur_path.replace(' ','\ ') + '/train.py', args)
+            command_line = gen_run_commands(python_command, cur_path.replace(' ', '\ ') + '/train.py', args)
             print(command_line)
             result = subprocess.run(command_line, stdout=subprocess.PIPE, shell=True)
             # print(result.stdout)

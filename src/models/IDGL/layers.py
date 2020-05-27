@@ -23,7 +23,7 @@ class IDGL_AdjGenerator(nn.Module):
 
     def __init__(self, n_feat, n_hidden,
                  num_head=4,
-                 threshold=0.1, cuda=True):
+                 threshold=0.1, dev=True):
         super(IDGL_AdjGenerator, self).__init__()
         self.threshold = threshold
         self.metric_layer_emb = nn.ModuleList()
@@ -32,7 +32,7 @@ class IDGL_AdjGenerator(nn.Module):
             self.metric_layer_feat.append(Metric_calc_layer(n_feat))
             self.metric_layer_emb.append(Metric_calc_layer(n_hidden))
         self.num_head = num_head
-        self.cuda = cuda
+        self.dev = dev
 
     def normalize_adj_torch(self, adj, mode='sc'):
         """Row-normalize sparse matrix"""
@@ -54,10 +54,7 @@ class IDGL_AdjGenerator(nn.Module):
 
         """
         # TODO Zero mat, necessary?
-        if self.cuda:
-            s = torch.zeros((h.shape[0], h.shape[0])).cuda()
-        else:
-            s = torch.zeros((h.shape[0], h.shape[0]))
+        s = torch.zeros((h.shape[0], h.shape[0])).to(self.dev)
         # zero_lines = torch.where(torch.sum(h, 1) == 0)[0]
         zero_lines = torch.nonzero(torch.sum(h, 1) == 0)
         if len(zero_lines) > 0:
@@ -78,9 +75,8 @@ class IDGL_AdjGenerator(nn.Module):
 
 
 class GraphConvolution(nn.Module):  # GCN AHW
-    def __init__(self, in_features, out_features, cuda=True, bias=True):
+    def __init__(self, in_features, out_features, bias=True):
         super(GraphConvolution, self).__init__()
-        self.cuda = cuda
         self.in_features = in_features
         self.out_features = out_features
         self.weight = Parameter(torch.FloatTensor(in_features, out_features))
