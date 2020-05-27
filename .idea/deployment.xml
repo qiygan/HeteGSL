@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" autoUpload="Always" serverName="Ali Server" showAutoUploadSettingsWarning="false">
+  <component name="PublishConfigData" autoUpload="Always" serverName="GoogleDrive" showAutoUploadSettingsWarning="false">
     <serverData>
       <paths name="Ali Server">
         <serverdata>
           <mappings>
-            <mapping deploy="/home/zja/PyProject/HeteGSL" local="$PROJECT_DIR$" />
+            <mapping deploy="PyProject/HeteGSL" local="$PROJECT_DIR$" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="DMG_S3">
+        <serverdata>
+          <mappings>
+            <mapping deploy="PyProject/HeteGSL" local="$PROJECT_DIR$" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="DMG_S4">
+        <serverdata>
+          <mappings>
+            <mapping deploy="PyProject/HeteGSL" local="$PROJECT_DIR$" />
           </mappings>
         </serverdata>
       </paths>
@@ -13,6 +27,13 @@
         <serverdata>
           <mappings>
             <mapping deploy="/home/zja/PyProject/HeteGSL" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="GoogleDrive">
+        <serverdata>
+          <mappings>
+            <mapping deploy="HeteGSL" local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>

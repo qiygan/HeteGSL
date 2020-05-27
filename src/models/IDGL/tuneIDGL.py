@@ -1,15 +1,22 @@
-server, gpu_id = 'Xy', 0
-server, gpu_id = 'S5', 3
+server, gpu = 'Xy', 0
+server, gpu = 'S5', 3
+server, gpu = 'Ali', 3
+server, gpu = 'Ali', -1
+server, gpu = 'S3', -2
+server, gpu = 'S3', -2
+server, gpu = 'S3', 0
+server, gpu = 'Colab', 0
 import os
 import sys
 
 cur_path = os.path.abspath(os.path.dirname(__file__))
-root_path = cur_path.split('/models')[0]
-sys.path.append(root_path)
+root_path = cur_path.split('src')[0]
+sys.path.append(root_path + 'src')
+os.chdir(root_path)
 
 from utils.util_funcs import *
 
-python_command = shell_init(server=server, gpu_id=gpu_id)
+python_command = shell_init(server=server, gpu_id=gpu)
 from utils import Results_dealer
 
 print(os.getcwd())
@@ -41,15 +48,17 @@ class IDGL_Config:
         # ! My config
         # Exp configs
         self.dataset = dataset
-        self.gpu = 0  # -1 to use cpu
-        self.out_path = '/home/zja/PyProject/HeteGSL/results/IDGL/'
-        self.exp_name = 'IDGL_res_'
+        self.gpu = gpu  # -1 to use cpu
+        self.out_path = 'results/IDGL/'
+        self.activation = 'Elu'
+        self.activation = 'Relu'
         # Train configs
         self.max_epoch = 300
         self.seed = 2020
         self.early_stop = 1
-        self.pretrain = 100
-
+        self.exp_name = f'IDGL_{self.activation}_GCN Original_NLL_Loss'
+        self.pretrain_epochs = 250
+        self.exp_name = f'IDGL_wo_graph_reg'
 
 
 def grid_search():
@@ -84,7 +93,7 @@ def grid_tune_single_var(to_be_tuned, para_ind, run_times, resd):
             exec("args.{} = tuning_set[para_i]".format(to_be_tuned))
             # * ================ Start Running ===================
             print(' <seed={}>'.format(args.seed), end='')
-            command_line = gen_run_commands(python_command, cur_path + '/train.py', args)
+            command_line = gen_run_commands(python_command, cur_path.replace(' ','\ ') + '/train.py', args)
             print(command_line)
             result = subprocess.run(command_line, stdout=subprocess.PIPE, shell=True)
             # print(result.stdout)
@@ -103,10 +112,6 @@ to_be_tuned = 'lr'
 para_ind = 'none'
 dataset = 'cora'
 run_times = 10
-# * ================ Model Variables ================
-# File paths
-log_path = '../results/IDGL'
-
 # * ============== Initialization ===================
 resd = Results_dealer(dataset, '../results/')
 
@@ -115,4 +120,4 @@ start_time = time.time()
 grid_tune_single_var(to_be_tuned, para_ind, run_times, resd)
 tuning_time = time.time() - start_time
 # * =============== Server Commands ===================
-# python /home/zja/PyProject/HeteGSL/src/models/IDGL/tuneIDGL.py
+# python ~/PyProject/HeteGSL/src/models/IDGL/tuneIDGL.py

@@ -1,7 +1,9 @@
 from utils.util_funcs import cos_sim
 import math
+import torch
 import torch.nn as nn
 from torch.nn.parameter import Parameter
+import torch.nn.functional as F
 
 
 class Metric_calc_layer(nn.Module):
@@ -21,7 +23,7 @@ class IDGL_AdjGenerator(nn.Module):
 
     def __init__(self, n_feat, n_hidden,
                  num_head=4,
-                 threshold=0.1):
+                 threshold=0.1, cuda=True):
         super(IDGL_AdjGenerator, self).__init__()
         self.threshold = threshold
         self.metric_layer_emb = nn.ModuleList()
@@ -30,6 +32,7 @@ class IDGL_AdjGenerator(nn.Module):
             self.metric_layer_feat.append(Metric_calc_layer(n_feat))
             self.metric_layer_emb.append(Metric_calc_layer(n_hidden))
         self.num_head = num_head
+        self.cuda = cuda
 
     def normalize_adj_torch(self, adj, mode='sc'):
         """Row-normalize sparse matrix"""
@@ -51,10 +54,15 @@ class IDGL_AdjGenerator(nn.Module):
 
         """
         # TODO Zero mat, necessary?
-        s = torch.zeros((h.shape[0], h.shape[0])).cuda()
-        zero_lines = torch.where(torch.sum(h, 1) == 0)[0]
+        if self.cuda:
+            s = torch.zeros((h.shape[0], h.shape[0])).cuda()
+        else:
+            s = torch.zeros((h.shape[0], h.shape[0]))
+        # zero_lines = torch.where(torch.sum(h, 1) == 0)[0]
+        zero_lines = torch.nonzero(torch.sum(h, 1) == 0)
         if len(zero_lines) > 0:
-            raise ValueError('{} zero lines in {}s!\nZero lines:{}'.format(len(zero_lines), mode, zero_lines))
+            # raise ValueError('{} zero lines in {}s!\nZero lines:{}'.format(len(zero_lines), mode, zero_lines))
+            h[zero_lines, :] += 1e-8
         for i in range(self.num_head):
             if mode == 'feat':  # First time, use feat as emb.
                 weighted_h = self.metric_layer_feat[i](h)
@@ -67,10 +75,6 @@ class IDGL_AdjGenerator(nn.Module):
         # s = self.normalize_adj_torch(s)
         s = F.normalize(s, dim=1, p=1)  # Row normalization
         return s
-
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
 
 
 class GraphConvolution(nn.Module):  # GCN AHW
@@ -95,9 +99,6 @@ class GraphConvolution(nn.Module):  # GCN AHW
     def forward(self, inputs, adj):
         support = torch.spmm(inputs, self.weight)  # HW in GCN
         output = torch.spmm(adj, support)  # AHW
-        zero_lines = torch.where(torch.sum(output, 1) == 0)[0]
-        if len(zero_lines) > 0:
-            print('{} zero lines in embeddings!\nZero lines:{}'.format(len(zero_lines), zero_lines))
         if self.bias is not None:
             return output + self.bias
         else:

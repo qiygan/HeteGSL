@@ -29,14 +29,13 @@ class Results_dealer:
             out_file.write(str(res_dict['para_dict']) + '\n')
             out_file.write(str(res_dict['exp_results']) + '\n')
 
-    def calc_mean_std(self, f_name, metric_set=['acc']):
+    def calc_mean_std(self, f_name):
         """
         Load results from f_name and calculate mean and std value
         """
         # Init records
         parameters = {}
-        for m in metric_set:  # init metric dict
-            exec('{}=dict()'.format(m))
+        metric_set = None
         eid = 0
         # Load records
         with open(f_name, 'r') as f:
@@ -48,18 +47,24 @@ class Results_dealer:
                         eid += 1
                         parameters[eid] = line.strip('\n')
                     else:  # results
-                        for metric in metric_set:
-                            if metric in d.keys():
-                                exec('{}[eid]=float(d[\'{}\'])'.format(metric, metric))
-        exec('out_list_ = [parameters,{}]'.format(str(metric_set).replace('\'', '').strip('[').strip(']')), globals(),
-             locals())
+                        if metric_set == None:
+                            metric_set = list(d.keys())
+                            for m in metric_set:  # init metric dict
+                                exec('{}=dict()'.format(m))
+                        for m in metric_set:
+                            exec(f'{m}[eid]=float(d[\'{m}\'])')
+        metric_set_str = str(metric_set).replace('\'', '').strip('[').strip(']')
+        exec(f'out_list_ = [parameters,{metric_set_str}]', globals(), locals())
         out_list = locals()["out_list_"]
         out_df = pd.DataFrame.from_records(out_list).T
         out_df.columns = ['parameters', *metric_set]
+
+        mean_res = out_df[metric_set].mean()
+        std_res = out_df[metric_set].std()
         with open(f_name, 'a+') as f:
-            f.write('\n\n' + '#' * 10 + 'AVG RESULTS' + '#' * 10)
-            f.write('\nMean:' + str(out_df[metric_set].mean()).replace('\ndtype: float64', '') + '\n')
-            f.write('Std:' + str(out_df[metric_set].std()).replace('\ndtype: float64', '') + '\n')
+            f.write('\n\n' + '#' * 10 + 'AVG RESULTS' + '#' * 10+'\n')
+            for m in metric_set:
+                f.write(f'{m}: {mean_res[m]:.4f} ({std_res[m]:.4f})\n')
             f.write('#' * 10 + '###########' + '#' * 10)
 
     def result_to_exl(self, fname):
@@ -138,4 +143,5 @@ class Results_dealer:
 
 if __name__ == '__main__':
     resd = Results_dealer('cora', '')
-    resd.calc_mean_std('/home/zja/PyProject/HeteGSL/results/IDGL/IDGL_res_05-14 09:5724.txt')
+    fname = 'IDGL_ELU_wo_pretrain05-25 18-27-16'
+    resd.calc_mean_std(f'/home/zja/PyProject/HeteGSL/results/IDGL/{fname}.txt')

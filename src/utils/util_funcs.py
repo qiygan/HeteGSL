@@ -1,6 +1,7 @@
 import numpy as np
 
-def shell_init(server='S5', gpu_id=0, f_prefix=''):
+
+def shell_init(server='S5', gpu_id=0):
     '''
     Features
     Ignore wanrnings
@@ -11,18 +12,16 @@ def shell_init(server='S5', gpu_id=0, f_prefix=''):
     '''
     import os
     import warnings
-    import sys
     np.seterr(invalid='ignore')
     warnings.filterwarnings("ignore")
     if server == 'Xy':
-        SOURCE_PATH = '/home/chopin/zja/PyProject/HeteGSL/' + f_prefix
         python_command = '/home/chopin/zja/anaconda/bin/python'
-    else:
-        SOURCE_PATH = '/home/zja/PyProject/HeteGSL/' + f_prefix
+    elif server=='Colab':
         python_command = 'python'
-        os.environ['CUDA_VISIBLE_DEVICES'] = str(gpu_id)
-    os.chdir(SOURCE_PATH)
-    sys.path.append(SOURCE_PATH + 'src/')
+    else:
+        python_command = '~/anaconda3/bin/python'
+        if gpu_id > 0:
+            os.environ['CUDA_VISIBLE_DEVICES'] = str(gpu_id)
     return python_command
 
 
@@ -73,7 +72,7 @@ def write_dict(d, f_path):
     def _write_dict(d, f):
         for key in d.keys():
             if isinstance(d[key], dict):
-                f.write(str(d[key])+'\n')
+                f.write(str(d[key]) + '\n')
 
     with open(f_path, 'a+') as f:
         f.write('\n')
@@ -111,3 +110,13 @@ def gen_run_commands(python_command='python', prog_path='', conf=None, return_st
                 command_list.append('--' + var)
                 command_list.append(str(val))
     return command_list
+
+
+def exists_zero_lines(h):
+    import torch
+    zero_lines = torch.where(torch.sum(h, 1) == 0)[0]
+    if len(zero_lines) > 0:
+        # raise ValueError('{} zero lines in {}s!\nZero lines:{}'.format(len(zero_lines), 'emb', zero_lines))
+        print(f'{len(zero_lines)} zero lines !\nZero lines:{zero_lines}')
+        return True
+    return False
