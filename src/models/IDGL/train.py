@@ -33,7 +33,7 @@ def normalize_adj_torch(adj):
 def graph_reg_loss(args, adj, features):
     # Dirichlet energy
     degree_mat = torch.diag(torch.sum(adj, 1))
-    laplacian_mat = adj - degree_mat
+    laplacian_mat = degree_mat - adj
     _ = torch.mm(torch.transpose(features, 0, 1), laplacian_mat)
     _ = torch.mm(_, features)
     dir_energy = torch.trace(_)
@@ -69,13 +69,11 @@ def iter_condition(args, adj_prev, adj_new, ori_adj_norm, t):
     return cond1 and cond2
 
 
-def cal_loss(args, cla_loss, logits, train_mask, labels, adj=None, features=None, mode='default'):
+def cal_loss(args, cla_loss, logits, train_mask, labels, adj=None, features=None):
     l_pred = cla_loss(logits[train_mask], labels[train_mask])
-    if mode == 'pretrain':
-        return l_pred  # Fixme
     l_graph = graph_reg_loss(args, adj, features)
-    loss = l_pred
-    # loss = l_pred + l_graph
+    loss = l_pred + l_graph
+    # loss = l_pred
     return loss
 
 
@@ -83,14 +81,7 @@ def cal_loss(args, cla_loss, logits, train_mask, labels, adj=None, features=None
 def train_idgl(args):
     data = load_data(args)
     seed_init(seed=args.seed)
-    if args.tpu > 0:
-        # TPU
-        import torch_xla
-        import torch_xla.core.xla_model as xm
-        dev = xm.xla_device()
-    else:
-        # CPU or GPU
-        dev = torch.device("cuda:0" if args.gpu>=0 else "cpu")
+    dev = torch.device("cuda:0" if args.gpu >= 0 else "cpu")
 
     features = torch.FloatTensor(data.features)
     labels = torch.LongTensor(data.labels)
@@ -135,7 +126,9 @@ def train_idgl(args):
     stopper = EarlyStopping(patience=80, path=es_checkpoint)
 
     model.to(dev)
-    adj = g.adjacency_matrix().to(dev)
+    adj = g.adjacency_matrix()
+    adj = normalize_adj_torch(adj.to_dense())
+    adj = adj.to(dev)
 
     # cla_loss = torch.nn.CrossEntropyLoss()
     cla_loss = torch.nn.NLLLoss()
@@ -147,7 +140,6 @@ def train_idgl(args):
     dur = []
     h = None
 
-    adj = normalize_adj_torch(adj.to_dense())
     ori_adj_norm = torch.norm(adj, p=2)
     # ! Pretrain
 
@@ -167,11 +159,11 @@ def train_idgl(args):
         if args.early_stop:
             if stopper.step(val_acc, model):
                 break
+    print(f"Pretrain Test Accuracy: {test_acc:.4f}")
     print(f"{'=' * 10}Pretrain finished!{'=' * 10}\n\n")
     if args.early_stop:
         model.load_state_dict(torch.load(es_checkpoint))
     test_acc = evaluate(model, features, labels, test_mask, adj)
-    print(f"Pretrain Test Accuracy: {test_acc:.4f}")
     res_dict = {'parameters': args.__dict__, 'res': {'pretrain_acc': f'{test_acc:.4f}'}}
     # ! Train
     stopper = EarlyStopping(patience=80, path=es_checkpoint)
@@ -252,8 +244,6 @@ if __name__ == '__main__':
                         help="dataset to use")
     parser.add_argument("--gpu", type=int, default=0,
                         help="which GPU to use. Set -1 to use CPU.")
-    parser.add_argument("--tpu", type=int, default=-1,
-                        help="use TPU or not")
     parser.add_argument('--out_path', type=str, default='results/IDGL/',
                         help="path of results")
     parser.add_argument('--exp_name', type=str, default='IDGL_Results.txt',
@@ -268,10 +258,10 @@ if __name__ == '__main__':
     parser.add_argument("--pretrain_epochs", type=int, default=250, help="pretrain max_epoch")
 
     args = parser.parse_args()
-    # args.pretrain_epochs = 0
+    # args.pretrain_epochs = 1
     # args.seed = 5 # Bad seed
-    args.gpu = -1
-    # args.seed = 0
+    # args.gpu = -1
+    # args.seed = 2
     print(args)
     shell_init(server='Ali', gpu_id=args.gpu)
     res_dict = train_idgl(args)

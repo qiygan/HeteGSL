@@ -33,10 +33,12 @@ class IDGL(nn.Module):
         # ! Generate adj
         if mode == 'feat':
             adj_sim = self.GenAdjLayer(x, mode='feat')
-            adj_agg = self.lambda_ * adj_ori + (1 - self.lambda_) * adj_sim
+            adj_agg = F.normalize(adj_sim, dim=1, p=1)  # Row normalization
+            adj_agg = self.lambda_ * adj_ori + (1 - self.lambda_) * adj_agg
         elif mode == 'emb':
             adj_sim = self.GenAdjLayer(h, mode='emb')
-            adj_agg = self.lambda_ * adj_ori + (1 - self.lambda_) * adj_sim
+            adj_agg = F.normalize(adj_sim, dim=1, p=1)  # Row normalization
+            adj_agg = self.lambda_ * adj_ori + (1 - self.lambda_) * adj_agg
             # combine feat and emb sim mat
             adj_agg = self.eta * adj_agg + (1 - self.eta) * adj_feat
 
@@ -77,13 +79,11 @@ class GCN_with_emb(nn.Module):
 
         x2 = F.relu(x2)
         return F.log_softmax(x2, dim=1), emb
-        # ! Note that the detach() operation is vital, 下一个循环中我们要根据adj update的是metric向量而不是网络参数
 
 
 class GCN2(nn.Module):
     def __init__(self, nfeat, nhid, nclass, dropout):
         super(GCN2, self).__init__()
-
         self.gc1 = GraphConvolution(nfeat, nhid)
         self.gc2 = GraphConvolution(nhid, nclass)
         self.dropout = dropout

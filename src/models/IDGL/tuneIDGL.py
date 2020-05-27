@@ -49,17 +49,16 @@ class IDGL_Config:
         # Exp configs
         self.dataset = dataset
         self.gpu = gpu  # -1 to use cpu
-        self.tpu = 0
         self.out_path = 'results/IDGL/'
-        self.activation = 'Elu'
         self.activation = 'Relu'
         # Train configs
         self.max_epoch = 300
         self.seed = 2020
         self.early_stop = 1
         self.exp_name = f'IDGL_{self.activation}_GCN Original_NLL_Loss'
-        self.pretrain_epochs = 250
-        self.exp_name = f'IDGL_wo_graph_reg'
+        mode_name = 'IDGL'
+        self.pretrain_epochs, self.exp_name = 250, f'<{mode_name}>_pretrain'
+        self.pretrain_epochs, self.exp_name = 1, f'<{mode_name}>_wo_pretrain'
 
 
 def grid_search():

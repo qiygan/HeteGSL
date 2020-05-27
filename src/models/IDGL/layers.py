@@ -34,16 +34,6 @@ class IDGL_AdjGenerator(nn.Module):
         self.num_head = num_head
         self.dev = dev
 
-    def normalize_adj_torch(self, adj, mode='sc'):
-        """Row-normalize sparse matrix"""
-        rowsum = torch.sum(adj, 1)
-        # r_inv_sqrt = torch.pow(rowsum, -0.5).flatten()  # Abandoned, gen nan for zero values.
-        r_inv_sqrt = torch.pow(rowsum + 1e-8, -0.5).flatten()
-        r_inv_sqrt[torch.isinf(r_inv_sqrt)] = 0.
-        r_mat_inv_sqrt = torch.diag(r_inv_sqrt)
-        normalized_adj = torch.mm(torch.mm(r_mat_inv_sqrt, adj), r_mat_inv_sqrt)
-        return normalized_adj
-
     def forward(self, h, mode='emb'):
         """
 
@@ -55,7 +45,6 @@ class IDGL_AdjGenerator(nn.Module):
         """
         # TODO Zero mat, necessary?
         s = torch.zeros((h.shape[0], h.shape[0])).to(self.dev)
-        # zero_lines = torch.where(torch.sum(h, 1) == 0)[0]
         zero_lines = torch.nonzero(torch.sum(h, 1) == 0)
         if len(zero_lines) > 0:
             # raise ValueError('{} zero lines in {}s!\nZero lines:{}'.format(len(zero_lines), mode, zero_lines))
@@ -70,7 +59,6 @@ class IDGL_AdjGenerator(nn.Module):
         # Remove negative values (Otherwise Nans are generated for negative values with power operation
         s = torch.where(s < self.threshold, torch.zeros_like(s), s)
         # s = self.normalize_adj_torch(s)
-        s = F.normalize(s, dim=1, p=1)  # Row normalization
         return s
 
 

@@ -19,8 +19,7 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="72ceada8-47c2-4be1-8ec3-3863fcb97c45" name="Default Changelist" comment="Updated code for Colab scripts">
-      <change beforePath="$PROJECT_DIR$/.idea/deployment.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/deployment.xml" afterDir="false" />
+    <list default="true" id="72ceada8-47c2-4be1-8ec3-3863fcb97c45" name="Default Changelist" comment="To Device updated">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/models/IDGL/IDGL.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/IDGL/IDGL.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/models/IDGL/layers.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/IDGL/layers.py" afterDir="false" />
@@ -289,7 +288,7 @@
       <workItem from="1590416590784" duration="6626000" />
       <workItem from="1590475778208" duration="1197000" />
       <workItem from="1590493795295" duration="349000" />
-      <workItem from="1590546155549" duration="2741000" />
+      <workItem from="1590546155549" duration="10539000" />
     </task>
     <task id="LOCAL-00001" summary="init 2">
       <created>1589287322874</created>
@@ -396,7 +395,14 @@
       <option name="project" value="LOCAL" />
       <updated>1590547384300</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="To Device updated">
+      <created>1590549014595</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1590549014595</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -435,13 +441,14 @@
     <MESSAGE value="early_stopper.py added" />
     <MESSAGE value="printf updated" />
     <MESSAGE value="Updated code for Colab scripts" />
-    <option name="LAST_COMMIT_MESSAGE" value="Updated code for Colab scripts" />
+    <MESSAGE value="To Device updated" />
+    <option name="LAST_COMMIT_MESSAGE" value="To Device updated" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="414" y="171" key="#Deployment" timestamp="1590548993803">
+    <state x="414" y="171" key="#Deployment" timestamp="1590571854784">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state x="414" y="171" key="#Deployment/0.0.1440.900@0.0.1440.900" timestamp="1590548993803" />
+    <state x="414" y="171" key="#Deployment/0.0.1440.900@0.0.1440.900" timestamp="1590571854784" />
     <state x="552" y="198" key="#Deployment/0.0.1920.1040@0.0.1920.1040" timestamp="1587171314027" />
     <state x="603" y="320" key="#Notifications" timestamp="1589359155023">
       <screen x="0" y="0" width="1440" height="900" />
@@ -476,10 +483,10 @@
       <screen x="0" y="0" width="1440" height="900" />
     </state>
     <state x="406" y="60" key="#tuneIDGL/0.0.1440.900@0.0.1440.900" timestamp="1589287612464" />
-    <state x="418" y="340" width="732" height="516" key="#xdebugger.evaluate" timestamp="1590548853974">
+    <state x="436" y="384" width="732" height="516" key="#xdebugger.evaluate" timestamp="1590567561453">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state x="418" y="340" width="732" height="516" key="#xdebugger.evaluate/0.0.1440.900@0.0.1440.900" timestamp="1590548853974" />
+    <state x="436" y="384" width="732" height="516" key="#xdebugger.evaluate/0.0.1440.900@0.0.1440.900" timestamp="1590567561453" />
     <state x="1022" y="356" width="629" height="596" key="#xdebugger.evaluate/0.0.1920.1040@0.0.1920.1040" timestamp="1587269794193" />
     <state x="597" y="321" key="#xdebugger.evaluate/0.23.1440.877@0.23.1440.877" timestamp="1589876303259" />
     <state width="1438" height="440" key="DebuggerActiveHint" timestamp="1590214839545">
@@ -502,53 +509,53 @@
       <screen x="0" y="0" width="1440" height="900" />
     </state>
     <state x="482" y="164" key="Github.UntrackedFilesDialog/0.0.1440.900@0.0.1440.900" timestamp="1589267200465" />
-    <state width="1440" height="312" key="GridCell.Tab.0.bottom" timestamp="1590548862668">
+    <state width="1440" height="265" key="GridCell.Tab.0.bottom" timestamp="1590571595551">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state width="1440" height="312" key="GridCell.Tab.0.bottom/0.0.1440.900@0.0.1440.900" timestamp="1590548862668" />
+    <state width="1440" height="265" key="GridCell.Tab.0.bottom/0.0.1440.900@0.0.1440.900" timestamp="1590571595551" />
     <state width="1876" height="392" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1587282886192" />
     <state width="1440" height="312" key="GridCell.Tab.0.bottom/0.23.1440.877@0.23.1440.877" timestamp="1590416488448" />
-    <state width="1440" height="312" key="GridCell.Tab.0.center" timestamp="1590548862667">
+    <state width="1440" height="265" key="GridCell.Tab.0.center" timestamp="1590571595549">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state width="1440" height="312" key="GridCell.Tab.0.center/0.0.1440.900@0.0.1440.900" timestamp="1590548862667" />
+    <state width="1440" height="265" key="GridCell.Tab.0.center/0.0.1440.900@0.0.1440.900" timestamp="1590571595549" />
     <state width="1876" height="392" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1587282886192" />
     <state width="1440" height="312" key="GridCell.Tab.0.center/0.23.1440.877@0.23.1440.877" timestamp="1590416488446" />
-    <state width="1440" height="312" key="GridCell.Tab.0.left" timestamp="1590548862666">
+    <state width="1440" height="265" key="GridCell.Tab.0.left" timestamp="1590571595548">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state width="1440" height="312" key="GridCell.Tab.0.left/0.0.1440.900@0.0.1440.900" timestamp="1590548862666" />
+    <state width="1440" height="265" key="GridCell.Tab.0.left/0.0.1440.900@0.0.1440.900" timestamp="1590571595548" />
     <state width="1398" height="304" key="GridCell.Tab.0.left/0.0.1440.900@0.23.1440.877" timestamp="1589295608806" />
     <state width="1876" height="392" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1587282886192" />
     <state width="1440" height="312" key="GridCell.Tab.0.left/0.23.1440.877@0.23.1440.877" timestamp="1590416488445" />
-    <state width="1440" height="312" key="GridCell.Tab.0.right" timestamp="1590548862668">
+    <state width="1440" height="265" key="GridCell.Tab.0.right" timestamp="1590571595550">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state width="1440" height="312" key="GridCell.Tab.0.right/0.0.1440.900@0.0.1440.900" timestamp="1590548862668" />
+    <state width="1440" height="265" key="GridCell.Tab.0.right/0.0.1440.900@0.0.1440.900" timestamp="1590571595550" />
     <state width="1876" height="392" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1587282886192" />
     <state width="1440" height="312" key="GridCell.Tab.0.right/0.23.1440.877@0.23.1440.877" timestamp="1590416488447" />
-    <state width="1440" height="312" key="GridCell.Tab.1.bottom" timestamp="1590548759844">
-      <screen x="0" y="23" width="1440" height="877" />
+    <state width="1440" height="312" key="GridCell.Tab.1.bottom" timestamp="1590567583999">
+      <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state width="1440" height="312" key="GridCell.Tab.1.bottom/0.0.1440.900@0.0.1440.900" timestamp="1590548723719" />
+    <state width="1440" height="312" key="GridCell.Tab.1.bottom/0.0.1440.900@0.0.1440.900" timestamp="1590567583999" />
     <state width="1876" height="314" key="GridCell.Tab.1.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1587279820181" />
     <state width="1440" height="312" key="GridCell.Tab.1.bottom/0.23.1440.877@0.23.1440.877" timestamp="1590548759844" />
-    <state width="1440" height="312" key="GridCell.Tab.1.center" timestamp="1590548759843">
-      <screen x="0" y="23" width="1440" height="877" />
+    <state width="1440" height="312" key="GridCell.Tab.1.center" timestamp="1590567583999">
+      <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state width="1440" height="312" key="GridCell.Tab.1.center/0.0.1440.900@0.0.1440.900" timestamp="1590548723718" />
+    <state width="1440" height="312" key="GridCell.Tab.1.center/0.0.1440.900@0.0.1440.900" timestamp="1590567583999" />
     <state width="1876" height="314" key="GridCell.Tab.1.center/0.0.1920.1040@0.0.1920.1040" timestamp="1587279820181" />
     <state width="1440" height="312" key="GridCell.Tab.1.center/0.23.1440.877@0.23.1440.877" timestamp="1590548759843" />
-    <state width="1440" height="312" key="GridCell.Tab.1.left" timestamp="1590548759843">
-      <screen x="0" y="23" width="1440" height="877" />
+    <state width="1440" height="312" key="GridCell.Tab.1.left" timestamp="1590567583998">
+      <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state width="1440" height="312" key="GridCell.Tab.1.left/0.0.1440.900@0.0.1440.900" timestamp="1590548723718" />
+    <state width="1440" height="312" key="GridCell.Tab.1.left/0.0.1440.900@0.0.1440.900" timestamp="1590567583998" />
     <state width="1876" height="314" key="GridCell.Tab.1.left/0.0.1920.1040@0.0.1920.1040" timestamp="1587279820181" />
     <state width="1440" height="312" key="GridCell.Tab.1.left/0.23.1440.877@0.23.1440.877" timestamp="1590548759843" />
-    <state width="1440" height="312" key="GridCell.Tab.1.right" timestamp="1590548759844">
-      <screen x="0" y="23" width="1440" height="877" />
+    <state width="1440" height="312" key="GridCell.Tab.1.right" timestamp="1590567583999">
+      <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state width="1440" height="312" key="GridCell.Tab.1.right/0.0.1440.900@0.0.1440.900" timestamp="1590548723719" />
+    <state width="1440" height="312" key="GridCell.Tab.1.right/0.0.1440.900@0.0.1440.900" timestamp="1590567583999" />
     <state width="1876" height="314" key="GridCell.Tab.1.right/0.0.1920.1040@0.0.1920.1040" timestamp="1587279820181" />
     <state width="1440" height="312" key="GridCell.Tab.1.right/0.23.1440.877@0.23.1440.877" timestamp="1590548759844" />
     <state x="267" y="150" key="SettingsEditor" timestamp="1590376731161">
@@ -561,10 +568,10 @@
       <screen x="0" y="0" width="1440" height="900" />
     </state>
     <state width="498" height="451" key="SwitcherDM/0.0.1440.900@0.0.1440.900" timestamp="1589791185893" />
-    <state x="320" y="190" key="Vcs.Push.Dialog.v2" timestamp="1590547386285">
+    <state x="320" y="190" key="Vcs.Push.Dialog.v2" timestamp="1590549015664">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state x="320" y="190" key="Vcs.Push.Dialog.v2/0.0.1440.900@0.0.1440.900" timestamp="1590547386285" />
+    <state x="320" y="190" key="Vcs.Push.Dialog.v2/0.0.1440.900@0.0.1440.900" timestamp="1590549015664" />
     <state width="720" height="452" key="XDebugger.FullValuePopup" timestamp="1589943507763">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
@@ -578,10 +585,10 @@
       <screen x="0" y="0" width="1440" height="900" />
     </state>
     <state x="100" y="100" width="1240" height="700" key="com.intellij.history.integration.ui.views.FileHistoryDialog/0.0.1440.900@0.0.1440.900" timestamp="1589708041838" />
-    <state x="497" y="88" width="576" height="759" key="find.popup" timestamp="1590548512758">
+    <state x="497" y="88" width="576" height="759" key="find.popup" timestamp="1590563147070">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state x="497" y="88" width="576" height="759" key="find.popup/0.0.1440.900@0.0.1440.900" timestamp="1590548512758" />
+    <state x="497" y="88" width="576" height="759" key="find.popup/0.0.1440.900@0.0.1440.900" timestamp="1590563147070" />
     <state x="662" y="102" width="596" height="876" key="find.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1587213983085" />
     <state x="629" y="234" width="535" height="525" key="ftp.server.browser" timestamp="1590372291027">
       <screen x="0" y="0" width="1440" height="900" />
@@ -604,7 +611,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/src/models/IDGL/train.py</url>
-          <line>277</line>
+          <line>267</line>
           <option name="timeStamp" value="84" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -614,30 +621,34 @@
           <option name="timeStamp" value="90" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <condition expression="epoch==198" language="Python" />
-          <url>file://$PROJECT_DIR$/src/models/IDGL/train.py</url>
-          <line>183</line>
-          <option name="timeStamp" value="114" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/src/models/IDGL/tuneIDGL.py</url>
-          <line>120</line>
+          <line>119</line>
           <option name="timeStamp" value="127" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/src/models/IDGL/layers.py</url>
-          <line>61</line>
+          <line>50</line>
           <option name="timeStamp" value="128" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/src/models/IDGL/layers.py</url>
-          <line>57</line>
-          <option name="timeStamp" value="129" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/src/utils/result_dealer.py</url>
           <line>64</line>
           <option name="timeStamp" value="135" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/src/models/IDGL/train.py</url>
+          <line>43</line>
+          <option name="timeStamp" value="142" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/src/models/IDGL/IDGL.py</url>
+          <line>35</line>
+          <option name="timeStamp" value="143" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/src/models/IDGL/layers.py</url>
+          <line>55</line>
+          <option name="timeStamp" value="145" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
@@ -649,6 +660,7 @@
         <watch expression="model.GenAdjLayer.metric_layer_emb[0].weight[0,:5]" language="Python" />
         <watch expression="model.GenAdjLayer.metric_layer_feat[0].weight[0,:5]" language="Python" />
         <watch expression="check_zero_lines(h)" language="Python" />
+        <watch expression="res" language="Python" />
       </configuration>
     </watches-manager>
   </component>
@@ -658,7 +670,7 @@
     <SUITE FILE_PATH="coverage/HeteGSL$result_dealer.coverage" NAME="result_dealer Coverage Results" MODIFIED="1590419525461" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/utils" />
     <SUITE FILE_PATH="coverage/HeteGSL$util_funcs.coverage" NAME="util_funcs Coverage Results" MODIFIED="1590401171057" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/utils" />
     <SUITE FILE_PATH="coverage/RLbasedGSL$train.coverage" NAME="train Coverage Results" MODIFIED="1589116776740" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
-    <SUITE FILE_PATH="coverage/HeteGSL$train.coverage" NAME="train Coverage Results" MODIFIED="1590548723690" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/models/IDGL" />
+    <SUITE FILE_PATH="coverage/HeteGSL$train.coverage" NAME="train Coverage Results" MODIFIED="1590571595528" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/models/IDGL" />
     <SUITE FILE_PATH="coverage/RLbasedGSL$train_idgl.coverage" NAME="train_idgl Coverage Results" MODIFIED="1589270016834" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
     <SUITE FILE_PATH="coverage/HeteGSL$layers.coverage" NAME="layers Coverage Results" MODIFIED="1590333701052" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/models/IDGL" />
     <SUITE FILE_PATH="coverage/HeteGSL$tuneIDGL.coverage" NAME="tuneIDGL Coverage Results" MODIFIED="1590546375100" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/models/IDGL" />
