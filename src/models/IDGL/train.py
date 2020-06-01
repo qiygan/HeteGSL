@@ -10,24 +10,15 @@ import argparse
 import networkx as nx
 import time
 from dgl import DGLGraph
-from dgl.data import register_data_args, load_data
+from dgl.data import load_data
 from models.IDGL import IDGL
 import numpy as np
 import torch
 from utils import EarlyStopping
 import torch.nn.functional as F
+from models.IDGL.config import IDGL_Config
 
 torch.autograd.set_detect_anomaly(True)
-
-
-def normalize_adj_torch(adj):
-    """Row-normalize sparse matrix"""
-    rowsum = torch.sum(adj, 1)
-    r_inv_sqrt = torch.pow(rowsum, -0.5).flatten()
-    r_inv_sqrt[torch.isinf(r_inv_sqrt)] = 0.
-    r_mat_inv_sqrt = torch.diag(r_inv_sqrt)
-    normalized_adj = torch.mm(torch.mm(r_mat_inv_sqrt, adj), r_mat_inv_sqrt)
-    return normalized_adj
 
 
 def graph_reg_loss(args, adj, features):
@@ -40,7 +31,7 @@ def graph_reg_loss(args, adj, features):
     # f(A)
     degree_vec = torch.sum(adj, 1)
     connectivity = -1 * torch.sum(torch.log(degree_vec))
-    sparsity = torch.norm(adj, p=2)  # torch.isinf(sparsity)
+    sparsity = torch.pow(torch.norm(adj, p='fro'), 2)  # torch.isinf(sparsity)
     res = args.alpha * dir_energy + args.beta * connectivity + args.gamma * sparsity
     return res
 
@@ -66,14 +57,16 @@ def iter_condition(args, adj_prev, adj_new, ori_adj_norm, t):
             torch.norm(adj_new - adj_prev, p=2) > args.delta * ori_adj_norm:
         cond1 = True
     cond2 = t < args.T
+    if not cond1 and cond2:
+        print(f'Number of iter:{t}')
     return cond1 and cond2
 
 
-def cal_loss(args, cla_loss, logits, train_mask, labels, adj=None, features=None):
+def cal_loss(args, cla_loss, logits, train_mask, labels, adj_sim=None, features=None):
     l_pred = cla_loss(logits[train_mask], labels[train_mask])
-    l_graph = graph_reg_loss(args, adj, features)
-    loss = l_pred + l_graph
-    # loss = l_pred
+    # l_graph = graph_reg_loss(args, adj_sim, features)
+    # loss = l_pred + l_graph
+    loss = l_pred
     return loss
 
 
@@ -84,6 +77,7 @@ def train_idgl(args):
     dev = torch.device("cuda:0" if args.gpu >= 0 else "cpu")
 
     features = torch.FloatTensor(data.features)
+    features = F.normalize(features, p=1, dim=1)
     labels = torch.LongTensor(data.labels)
     if hasattr(torch, 'BoolTensor'):
         train_mask = torch.BoolTensor(data.train_mask)
@@ -123,11 +117,12 @@ def train_idgl(args):
 
     print(model)
     es_checkpoint = 'temp/' + time.strftime('%m-%d %H-%M-%S', time.localtime()) + '.pt'
-    stopper = EarlyStopping(patience=80, path=es_checkpoint)
+    stopper = EarlyStopping(patience=100, path=es_checkpoint)
 
     model.to(dev)
     adj = g.adjacency_matrix()
-    adj = normalize_adj_torch(adj.to_dense())
+    # adj = normalize_adj_torch(adj.to_dense())
+    adj = F.normalize(adj.to_dense(), dim=1, p=1)
     adj = adj.to(dev)
 
     # cla_loss = torch.nn.CrossEntropyLoss()
@@ -140,9 +135,8 @@ def train_idgl(args):
     dur = []
     h = None
 
-    ori_adj_norm = torch.norm(adj, p=2)
     # ! Pretrain
-
+    res_dict = {'parameters': args.__dict__}
     for epoch in range(args.pretrain_epochs):
         logits, _ = model.GCN(features, adj)
         loss = cla_loss(logits[train_mask], labels[train_mask])
@@ -156,31 +150,33 @@ def train_idgl(args):
         test_acc = evaluate(model, features, labels, test_mask, adj)
         print(
             f"Pretrain-Epoch {epoch:05d} | Time(s) {np.mean(dur):.4f} | Loss {loss.item():.4f} | TrainAcc {train_acc:.4f} | ValAcc {val_acc:.4f} | TestAcc {test_acc:.4f}")
-        if args.early_stop:
+        if args.early_stop > 0:
             if stopper.step(val_acc, model):
                 break
     print(f"Pretrain Test Accuracy: {test_acc:.4f}")
     print(f"{'=' * 10}Pretrain finished!{'=' * 10}\n\n")
-    if args.early_stop:
+    if args.early_stop > 0:
         model.load_state_dict(torch.load(es_checkpoint))
     test_acc = evaluate(model, features, labels, test_mask, adj)
-    res_dict = {'parameters': args.__dict__, 'res': {'pretrain_acc': f'{test_acc:.4f}'}}
+    res_dict['res'] = {'pretrain_acc': f'{test_acc:.4f}'}
     # ! Train
-    stopper = EarlyStopping(patience=80, path=es_checkpoint)
+    stopper = EarlyStopping(patience=100, path=es_checkpoint)
     for epoch in range(args.max_epoch):
         model.train()
         if epoch >= 3:
             t0 = time.time()
         # forward
         t, adj_sim_prev = 0, None
-        logits, h, adj_sim, adj_feat = model(features, h=None, adj_ori=adj, adj_feat=None, mode='feat')
+        logits, h, adj_sim, adj_feat = model(features, h=None, adj_ori=adj, adj_feat=None, mode='feat',
+                                             norm_graph_reg_loss=args.ngrl)
         loss_adj_feat = cal_loss(args, cla_loss, logits, train_mask, labels, adj_sim, features)
         loss_list = [loss_adj_feat]
+        ori_adj_norm = torch.norm(adj_sim.detach(), p=2)
 
         while iter_condition(args, adj_sim_prev, adj_sim, ori_adj_norm, t):
             t += 1
             adj_sim_prev = adj_sim.detach()
-            logits, h, adj_sim, adj_agg = model(features, h, adj, adj_feat, mode='emb')
+            logits, h, adj_sim, adj_agg = model(features, h, adj, adj_feat, mode='emb', norm_graph_reg_loss=args.ngrl)
             # exists_zero_lines(h)
             loss_adj_emb = cal_loss(args, cla_loss, logits, train_mask, labels, adj_sim, features)
             loss_list.append(loss_adj_emb)
@@ -204,15 +200,16 @@ def train_idgl(args):
         #     f"Epoch {epoch:05d} | Time(s) {np.mean(dur):.4f} | Loss {loss.item():.4f} | TrainAcc {train_acc:.4f} | ValAcc {val_acc:.4f}")
         print(
             f"IDGL-Epoch {epoch:05d} | Time(s) {np.mean(dur):.4f} | Loss {loss.item():.4f} | TrainAcc {train_acc:.4f} | ValAcc {val_acc:.4f} | TestAcc {test_acc:.4f}")
-        if args.early_stop:
+        if args.early_stop > 0:
             if stopper.step(val_acc, model):
                 break
-    if args.early_stop:
+    if args.early_stop > 0:
         model.load_state_dict(torch.load(es_checkpoint))
     test_acc = evaluate(model, features, labels, test_mask, adj)
     print(f"Test Accuracy {test_acc:.4f}")
     res_dict['res']['IDGL_acc'] = f'{test_acc:.4f}'
     print(res_dict['res'])
+    print(res_dict['parameters'])
     return res_dict
 
 
@@ -240,7 +237,8 @@ if __name__ == '__main__':
 
     # ! My Configs
     # Exp configs
-    parser.add_argument("--dataset", type=str, default='cora',
+    # parser.add_argument("--dataset", type=str, default='cora',
+    parser.add_argument("--dataset", type=str, default='citeseer',
                         help="dataset to use")
     parser.add_argument("--gpu", type=int, default=0,
                         help="which GPU to use. Set -1 to use CPU.")
@@ -255,14 +253,22 @@ if __name__ == '__main__':
     parser.add_argument("--seed", type=int, default=2020,
                         help="training seed")
     parser.add_argument('--early_stop', type=int, default=1, help="indicates whether to use early stop or not")
-    parser.add_argument("--pretrain_epochs", type=int, default=250, help="pretrain max_epoch")
+    parser.add_argument("--pretrain_epochs", type=int, default=200, help="pretrain max_epoch")
+    # Test
+    parser.add_argument("--ngrl", type=int, default=-1, help="normed graph reg loss")
+    parser.add_argument("--mode", type=str, default='tune')
 
     args = parser.parse_args()
-    # args.pretrain_epochs = 1
-    # args.seed = 5 # Bad seed
-    # args.gpu = -1
-    # args.seed = 2
+    if args.mode == 'test':
+        args = IDGL_Config('cora', gpu=1)
+        # args.pretrain_epochs = 1000
+        # args.seed = 5 # Bad seed
+        # args.gpu = 1
+        # args.ngrl = 1
+        # args.seed = 2
+        # args.alpha = 0 # wo.Dirichlet
+        # args.early_stop = 0
+        shell_init(server='Ali', gpu_id=args.gpu)
     print(args)
-    shell_init(server='Ali', gpu_id=args.gpu)
     res_dict = train_idgl(args)
     write_dict(res_dict, args.out_path + args.exp_name)

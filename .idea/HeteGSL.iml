@@ -5,7 +5,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/models/IDGL" isTestSource="false" />
     </content>
-    <orderEntry type="jdk" jdkName="DMG_S3" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="DMG_S4" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="PyDocumentationSettings">

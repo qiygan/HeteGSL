@@ -16,7 +16,7 @@ def shell_init(server='S5', gpu_id=0):
     warnings.filterwarnings("ignore")
     if server == 'Xy':
         python_command = '/home/chopin/zja/anaconda/bin/python'
-    elif server=='Colab':
+    elif server == 'Colab':
         python_command = 'python'
     else:
         python_command = '~/anaconda3/bin/python'
@@ -44,6 +44,16 @@ def cos_sim(a, b, eps=1e-8):
     b_norm = b / torch.max(b_n, eps * torch.ones_like(b_n))
     sim_mt = torch.mm(a_norm, b_norm.transpose(0, 1))
     return sim_mt
+
+
+def cos_sim2(a):
+    """
+    Self Similarity
+    """
+    import torch
+    a_norm = a / a.norm(dim=1)[:, None]
+    res = torch.mm(a_norm, a_norm.transpose(0, 1))
+    return res
 
 
 def tqdm_fixed(*args, **kwargs):

@@ -14,9 +14,11 @@ root_path = cur_path.split('src')[0]
 sys.path.append(root_path + 'src')
 os.chdir(root_path)
 
+from models.IDGL.config import IDGL_Config
 from utils.util_funcs import *
 
 python_command = shell_init(server=server, gpu_id=gpu)
+print(python_command)
 from utils import Results_dealer
 
 print(os.getcwd())
@@ -25,40 +27,6 @@ from models.IDGL import train_idgl
 import time
 import pickle
 import subprocess
-
-
-class IDGL_Config:
-
-    def __init__(self, dataset='cora'):
-        # ! IDGL configs # Table 7 in paper
-        self.lambda_ = 0.9
-        self.eta = 0.1  # balance coef. of adj_emb and adj_feat
-        self.alpha = 0.2
-        self.beta = 0.0
-        self.gamma = 0.0  #
-        self.epsilon = 0.0  #
-        self.num_head = 4  # m: Num of metric heads
-        self.delta = 4e-5
-        self.T = 10
-        # ! Other settings in paper
-        self.lr = 0.01  # Fixed lr for all dataset
-        self.dropout = 0.5
-        self.num_hidden = 16
-        self.weight_decay = 5e-4  # Fixed for all dataset
-        # ! My config
-        # Exp configs
-        self.dataset = dataset
-        self.gpu = gpu  # -1 to use cpu
-        self.out_path = 'results/IDGL/'
-        self.activation = 'Relu'
-        # Train configs
-        self.max_epoch = 300
-        self.seed = 2020
-        self.early_stop = 1
-        self.exp_name = f'IDGL_{self.activation}_GCN Original_NLL_Loss'
-        mode_name = 'IDGL'
-        self.pretrain_epochs, self.exp_name = 250, f'<{mode_name}>_pretrain'
-        self.pretrain_epochs, self.exp_name = 1, f'<{mode_name}>_wo_pretrain'
 
 
 def grid_search():
@@ -86,7 +54,14 @@ def grid_tune_single_var(to_be_tuned, para_ind, run_times, resd):
         for i in range(run_times):
             # * ================ Default configs ================
             # Model config
-            args = IDGL_Config(dataset)
+            args = IDGL_Config(dataset, gpu)
+            mode_name = 'IDGL'  # 0
+            # args.pretrain_epochs, args.exp_name, args.gpu = 1, f'<{mode_name}>_wo_pretrain', 1  # 1
+            # args.early_stop, args.exp_name, args.gpu = 0, f'<{mode_name}>wo.EarlyStop', 1  # 2
+            # args.alpha, args.exp_name, args.gpu = 0, f'<{mode_name}>wo.Dirichlet', 2  # 3
+            # args.alpha, args.exp_name, args.gpu = 0, f'<{mode_name}>wo.sparsity', 3  # 4
+            # args.ngrl, args.exp_name, args.gpu = 1, f'<{mode_name}>Normed_graph', 0  # 5
+            args.exp_name = f'<{mode_name}>wo.GraphReg'
             # * ================= Modify config =================
             args.seed = i
             args.exp_name = args.exp_name + start_time + '.txt'
@@ -109,8 +84,9 @@ def grid_tune_single_var(to_be_tuned, para_ind, run_times, resd):
 
 # * ============ HyperParaTuning Variables ==========
 to_be_tuned = 'lr'
-para_ind = 'none'
+para_ind = 'none'  # @
 dataset = 'cora'
+dataset = 'citeseer'
 run_times = 10
 # * ============== Initialization ===================
 resd = Results_dealer(dataset, '../results/')

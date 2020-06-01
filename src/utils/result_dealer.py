@@ -64,7 +64,7 @@ class Results_dealer:
         with open(f_name, 'a+') as f:
             f.write('\n\n' + '#' * 10 + 'AVG RESULTS' + '#' * 10+'\n')
             for m in metric_set:
-                f.write(f'{m}: {mean_res[m]:.4f} ({std_res[m]:.4f})\n')
+                f.write(f'{m}: {100*mean_res[m]:.2f} ({100*std_res[m]:.2f})\n')
             f.write('#' * 10 + '###########' + '#' * 10)
 
     def result_to_exl(self, fname):

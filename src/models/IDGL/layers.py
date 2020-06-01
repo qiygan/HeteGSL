@@ -55,10 +55,11 @@ class IDGL_AdjGenerator(nn.Module):
             elif mode == 'emb':
                 weighted_h = self.metric_layer_emb[i](h)
             s += cos_sim(weighted_h, weighted_h)
+            if torch.min(cos_sim(weighted_h, weighted_h) < 0)<0:
+                print('!'*20+'\n')
         s /= self.num_head
         # Remove negative values (Otherwise Nans are generated for negative values with power operation
         s = torch.where(s < self.threshold, torch.zeros_like(s), s)
-        # s = self.normalize_adj_torch(s)
         return s
 
 
