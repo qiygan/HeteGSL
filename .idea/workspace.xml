@@ -19,19 +19,8 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="72ceada8-47c2-4be1-8ec3-3863fcb97c45" name="Default Changelist" comment="Graph Reg Loss Fixed">
-      <change afterPath="$PROJECT_DIR$/src/models/IDGL/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/HeteGSL.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/HeteGSL.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/deployment.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/deployment.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="72ceada8-47c2-4be1-8ec3-3863fcb97c45" name="Default Changelist" comment="Sparsity Frobenius Fixed">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/models/IDGL/IDGL.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/IDGL/IDGL.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/models/IDGL/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/IDGL/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/models/IDGL/layers.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/IDGL/layers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/models/IDGL/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/IDGL/train.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/models/IDGL/tuneIDGL.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/IDGL/tuneIDGL.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/result_dealer.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/result_dealer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/util_funcs.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/util_funcs.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -312,7 +301,8 @@
       <workItem from="1590991385446" duration="1000" />
       <workItem from="1590993460830" duration="18000" />
       <workItem from="1591000471799" duration="91000" />
-      <workItem from="1591003492677" duration="47000" />
+      <workItem from="1591003492677" duration="893000" />
+      <workItem from="1591019503891" duration="1287000" />
     </task>
     <task id="LOCAL-00001" summary="init 2">
       <created>1589287322874</created>
@@ -433,7 +423,14 @@
       <option name="project" value="LOCAL" />
       <updated>1590588304013</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="Sparsity Frobenius Fixed">
+      <created>1591003545071</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1591003545071</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -474,7 +471,8 @@
     <MESSAGE value="Updated code for Colab scripts" />
     <MESSAGE value="To Device updated" />
     <MESSAGE value="Graph Reg Loss Fixed" />
-    <option name="LAST_COMMIT_MESSAGE" value="Graph Reg Loss Fixed" />
+    <MESSAGE value="Sparsity Frobenius Fixed" />
+    <option name="LAST_COMMIT_MESSAGE" value="Sparsity Frobenius Fixed" />
   </component>
   <component name="WindowStateProjectService">
     <state x="414" y="171" key="#Deployment" timestamp="1590988326654">
