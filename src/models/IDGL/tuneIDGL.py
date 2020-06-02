@@ -27,18 +27,20 @@ from models.IDGL import train_idgl
 import time
 import pickle
 import subprocess
+import multiprocessing
 
 
 def grid_search():
     return
 
 
-def grid_tune_single_var(to_be_tuned, para_ind, run_times, resd):
+def grid_tune_single_var(to_be_tuned, para_ind, run_times, mode_name):
     def _generate_lr_list(para_ind='all'):
         para_set = {}
         para_set['all'] = [0.005]
         return para_set[para_ind]
 
+    resd = Results_dealer(dataset, '../results/')
     # to be tuned parameters
     if to_be_tuned == 'lr':
         tuning_set = _generate_lr_list()
@@ -52,19 +54,10 @@ def grid_tune_single_var(to_be_tuned, para_ind, run_times, resd):
         settings = '{}={}'.format(to_be_tuned, para_string)
         print('\nRuning :'.format(settings))
         for i in range(run_times):
-            # * ================ Default configs ================
-            # Model config
-            args = IDGL_Config(dataset, gpu)
-            mode_name = 'IDGL'  # 0
-            # args.pretrain_epochs, args.exp_name, args.gpu = 1, f'<{mode_name}>_wo_pretrain', 1  # 1
-            # args.early_stop, args.exp_name, args.gpu = 0, f'<{mode_name}>wo.EarlyStop', 1  # 2
-            # args.alpha, args.exp_name, args.gpu = 0, f'<{mode_name}>wo.Dirichlet', 2  # 3
-            # args.alpha, args.exp_name, args.gpu = 0, f'<{mode_name}>wo.sparsity', 3  # 4
-            # args.ngrl, args.exp_name, args.gpu = 1, f'<{mode_name}>Normed_graph', 0  # 5
-            args.exp_name = f'<{mode_name}>wo.GraphReg'
             # * ================= Modify config =================
-            args.seed = i
-            args.exp_name = args.exp_name + start_time + '.txt'
+            # Default config
+            args = IDGL_Config(dataset, gpu)
+            args = modify_config(args, mode_name, start_time, i)
             exec("args.{} = tuning_set[para_i]".format(to_be_tuned))
             # * ================ Start Running ===================
             print(' <seed={}>'.format(args.seed), end='')
@@ -82,18 +75,41 @@ def grid_tune_single_var(to_be_tuned, para_ind, run_times, resd):
     return None
 
 
+def modify_config(args, mode_name, start_time, seed):
+    args.seed = seed
+    model = 'IDGL'
+    if mode_name == 'wo_pretrain':
+        args.pretrain_epochs, args.exp_name, args.gpu = 1, f'<{model}>_wo_pretrain', 1  # 1
+    elif mode_name == 'wo_EarlyStop':
+        args.early_stop, args.exp_name, args.gpu = 0, f'<{model}>wo_EarlyStop', 1  # 2
+    elif mode_name == 'wo_Dirichlet':
+        args.alpha, args.exp_name, args.gpu = 0, f'<{model}>wo_Dirichlet', 2  # 3
+    elif mode_name == 'wo_sparsity':
+        args.alpha, args.exp_name, args.gpu = 0, f'<{model}>wo_sparsity', 3  # 4
+    elif mode_name == 'normed_graph':
+        args.ngrl, args.exp_name, args.gpu = 1, f'<{model}>Normed_graph', 0  # 5
+    args.exp_name = args.exp_name + start_time + '.txt'
+    return args
+
+
 # * ============ HyperParaTuning Variables ==========
 to_be_tuned = 'lr'
 para_ind = 'none'  # @
 dataset = 'cora'
 dataset = 'citeseer'
 run_times = 10
-# * ============== Initialization ===================
-resd = Results_dealer(dataset, '../results/')
-
 # * ============== HyperParaTuning ===================
 start_time = time.time()
-grid_tune_single_var(to_be_tuned, para_ind, run_times, resd)
+exps = ['wo_pretrain', 'wo_EarlyStop', 'wo_Dirichlet', 'wo_sparsity', 'normed_graph']
+exps = ['wo_pretrain', 'wo_EarlyStop', 'wo_Dirichlet']
+process_list = []
+for mode in exps:
+    _ = multiprocessing.Process(target=grid_tune_single_var,
+                                args=(to_be_tuned, para_ind, run_times, mode))
+    process_list.append(_)
+    _.start()
+for _ in process_list:
+    _.join()
 tuning_time = time.time() - start_time
 # * =============== Server Commands ===================
 # python ~/PyProject/HeteGSL/src/models/IDGL/tuneIDGL.py

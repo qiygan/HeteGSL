@@ -13,7 +13,10 @@ def shell_init(server='S5', gpu_id=0):
     import os
     import warnings
     np.seterr(invalid='ignore')
-    warnings.filterwarnings("ignore")
+    warnings.filterwarnings("ignore", category=FutureWarning)
+    warnings.filterwarnings("ignore", category=UserWarning)
+    warnings.filterwarnings("ignore", category=RuntimeWarning)
+
     if server == 'Xy':
         python_command = '/home/chopin/zja/anaconda/bin/python'
     elif server == 'Colab':

@@ -19,8 +19,10 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="72ceada8-47c2-4be1-8ec3-3863fcb97c45" name="Default Changelist" comment="Sparsity Frobenius Fixed">
+    <list default="true" id="72ceada8-47c2-4be1-8ec3-3863fcb97c45" name="Default Changelist" comment="Popen Backup">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/models/IDGL/tuneIDGL.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/IDGL/tuneIDGL.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/util_funcs.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/util_funcs.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -77,7 +79,7 @@
       <recent name="$PROJECT_DIR$/src/models" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.train">
+  <component name="RunManager" selected="Python.tuneIDGL">
     <configuration name="result_dealer" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="HeteGSL" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -100,7 +102,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="train (1)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="runProcess" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="HeteGSL" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -108,12 +110,12 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/models/GCN" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/models/GCN/train.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/runProcess.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -190,18 +192,18 @@
     </configuration>
     <list>
       <item itemvalue="Python.result_dealer" />
-      <item itemvalue="Python.train (1)" />
       <item itemvalue="Python.train" />
       <item itemvalue="Python.tuneIDGL" />
       <item itemvalue="Python.util_funcs" />
+      <item itemvalue="Python.runProcess" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.train" />
         <item itemvalue="Python.tuneIDGL" />
+        <item itemvalue="Python.runProcess" />
+        <item itemvalue="Python.train" />
         <item itemvalue="Python.result_dealer" />
         <item itemvalue="Python.util_funcs" />
-        <item itemvalue="Python.train (1)" />
       </list>
     </recent_temporary>
   </component>
@@ -302,7 +304,11 @@
       <workItem from="1590993460830" duration="18000" />
       <workItem from="1591000471799" duration="91000" />
       <workItem from="1591003492677" duration="893000" />
-      <workItem from="1591019503891" duration="1287000" />
+      <workItem from="1591019503891" duration="1378000" />
+      <workItem from="1591024124809" duration="459000" />
+      <workItem from="1591029881858" duration="4025000" />
+      <workItem from="1591063921261" duration="2525000" />
+      <workItem from="1591080264569" duration="3674000" />
     </task>
     <task id="LOCAL-00001" summary="init 2">
       <created>1589287322874</created>
@@ -430,7 +436,14 @@
       <option name="project" value="LOCAL" />
       <updated>1591003545071</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="Popen Backup">
+      <created>1591022325242</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1591022325242</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -472,13 +485,14 @@
     <MESSAGE value="To Device updated" />
     <MESSAGE value="Graph Reg Loss Fixed" />
     <MESSAGE value="Sparsity Frobenius Fixed" />
-    <option name="LAST_COMMIT_MESSAGE" value="Sparsity Frobenius Fixed" />
+    <MESSAGE value="Popen Backup" />
+    <option name="LAST_COMMIT_MESSAGE" value="Popen Backup" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="414" y="171" key="#Deployment" timestamp="1590988326654">
+    <state x="414" y="171" key="#Deployment" timestamp="1591082249847">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state x="414" y="171" key="#Deployment/0.0.1440.900@0.0.1440.900" timestamp="1590988326654" />
+    <state x="414" y="171" key="#Deployment/0.0.1440.900@0.0.1440.900" timestamp="1591082249847" />
     <state x="552" y="198" key="#Deployment/0.0.1920.1040@0.0.1920.1040" timestamp="1587171314027" />
     <state x="603" y="320" key="#Notifications" timestamp="1589359155023">
       <screen x="0" y="0" width="1440" height="900" />
