@@ -14,7 +14,7 @@ root_path = cur_path.split('src')[0]
 sys.path.append(root_path + 'src')
 os.chdir(root_path)
 
-from models.IDGL.config import IDGL_Config
+from models.HGSL.config import HGSL_Config
 from utils.util_funcs import *
 
 python_command = shell_init(server=server, gpu_id=gpu)
@@ -22,7 +22,6 @@ print(python_command)
 from utils import Results_dealer
 
 print(os.getcwd())
-from models.IDGL import train_idgl
 
 import time
 import pickle
@@ -55,7 +54,7 @@ def grid_tune_single_var(to_be_tuned, para_ind, run_times, mode_name):
         for i in range(run_times):
             # * ================= Modify config =================
             # Default config
-            args = IDGL_Config(dataset, gpu)
+            args = HGSL_Config(dataset, gpu)
             args = modify_config(args, mode_name, start_time, i)
             exec("args.{} = tuning_set[para_i]".format(to_be_tuned))
             # * ================ Start Running ===================
@@ -112,3 +111,5 @@ for _ in process_list:
 print(f'tuning_time={time2str(time.time() - start_time)}')
 # * =============== Server Commands ===================
 # python ~/PyProject/HGSL/src/models/IDGL/tuneHGSL.py
+
+

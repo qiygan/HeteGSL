@@ -3,12 +3,13 @@ import numpy as np
 
 def shell_init(server='S5', gpu_id=0):
     '''
-    Features
-    Ignore wanrnings
-    Ignore numpy warnings
-    Set paths
-    :param gpu_id:
-    :return:
+
+    Features:
+    1. Specify server specific source and python command
+    2. Fix Pycharm LD_LIBRARY_ISSUE
+    3. Block warnings
+    4. Block TF useless messages
+    5. Set paths
     '''
     import os
     import warnings
@@ -16,6 +17,7 @@ def shell_init(server='S5', gpu_id=0):
     warnings.filterwarnings("ignore", category=FutureWarning)
     warnings.filterwarnings("ignore", category=UserWarning)
     warnings.filterwarnings("ignore", category=RuntimeWarning)
+
 
     if server == 'Xy':
         python_command = '/home/chopin/zja/anaconda/bin/python'
@@ -25,6 +27,9 @@ def shell_init(server='S5', gpu_id=0):
         python_command = '~/anaconda3/bin/python'
         if gpu_id > 0:
             os.environ['CUDA_VISIBLE_DEVICES'] = str(gpu_id)
+        os.environ['LD_LIBRARY_PATH'] = '/usr/local/cuda/lib64/'  # Extremely useful for Pycharm users
+    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # Block TF messages
+
     return python_command
 
 

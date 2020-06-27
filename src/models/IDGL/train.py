@@ -257,7 +257,7 @@ if __name__ == '__main__':
     # Test
     parser.add_argument("--ngrl", type=int, default=-1, help="normed graph reg loss")
     parser.add_argument("--mode", type=str, default='tune')
-
+    parser.add_argument("--server", type=str, default='Colab')
     args = parser.parse_args()
     if args.mode == 'test':
         args = IDGL_Config('cora', gpu=1)
@@ -268,7 +268,7 @@ if __name__ == '__main__':
         # args.seed = 2
         # args.alpha = 0 # wo.Dirichlet
         # args.early_stop = 0
-        shell_init(server='Ali', gpu_id=args.gpu)
+    shell_init(server=args.server, gpu_id=args.gpu)
     print(args)
     res_dict = train_idgl(args)
     write_dict(res_dict, args.out_path + args.exp_name)
